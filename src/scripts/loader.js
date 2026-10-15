@@ -59,8 +59,12 @@ function waitForLayout() {
 }
 
 function setupBlueprintLines() {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  // medidas reales del SVG (position: fixed + inset 0): con la barra de scroll
+  // reservada, window.innerWidth es más ancho que el loader y el viewBox
+  // estiraría las líneas, corriéndolas respecto del logo
+  const svgRect = blueprintSvg.getBoundingClientRect();
+  const vw = svgRect.width || window.innerWidth;
+  const vh = svgRect.height || window.innerHeight;
   blueprintSvg.setAttribute("viewBox", `0 0 ${vw} ${vh}`);
   blueprintSvg.innerHTML = "";
 
