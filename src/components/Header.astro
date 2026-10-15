@@ -1,6 +1,17 @@
 ---
 // Posición del logo tipográfico en el header: "left" | "center" | "right"
-const { logoPosition = "right" } = Astro.props;
+const { logoPosition = "right", current = "/" } = Astro.props;
+
+const links = [
+  { href: "/", label: "Inicio" },
+  { href: "/obras", label: "Obras" },
+  { href: "/que-hacemos", label: "Qué hacemos" },
+  { href: "/como-trabajamos", label: "Cómo trabajamos" },
+  { href: "/nosotros", label: "Nosotros" },
+  { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
+  { href: "/contacto", label: "Contacto" },
+];
+const isCurrent = (href: string) => (href === "/" ? current === "/" : current.startsWith(href));
 ---
 
 <header class="site-header" data-logo-pos={logoPosition}>
@@ -24,6 +35,25 @@ const { logoPosition = "right" } = Astro.props;
       aria-hidden="true"
     />
   </a>
+
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
+    <span class="menu-toggle__open">Menú</span>
+    <span class="menu-toggle__close">Cerrar</span>
+  </button>
+
+  <nav class="site-nav" id="site-menu" aria-label="Principal">
+    <ul>
+      {
+        links.map((l) => (
+          <li>
+            <a href={l.href} aria-current={isCurrent(l.href) ? "page" : undefined}>
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
 </header>
 
 <style is:global>
@@ -34,23 +64,40 @@ const { logoPosition = "right" } = Astro.props;
     right: 0;
     z-index: 40;
     display: flex;
-    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
     padding: clamp(1rem, 2.4vw, 1.75rem) var(--gutter);
     pointer-events: none;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 1px 0 #ebebeb;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
   }
-  .site-header[data-logo-pos="left"] { justify-content: flex-start; }
-  .site-header[data-logo-pos="right"] { justify-content: flex-end; }
+  /* sobre la foto del hero la barra es transparente; en cuanto la hoja
+     blanca la cubre (y en todas las demás páginas) lleva fondo blanco para
+     que el contenido no se pise con los links al scrollear */
+  html.nav-over-photo .site-header {
+    background: transparent;
+    box-shadow: none;
+  }
 
+  /* ---------- Logo ---------- */
   .site-logo {
     position: relative;
+    z-index: 0;
+    order: 3;
     display: block;
     width: var(--logo-w);
+    margin-left: auto;
     border-bottom: 0;
     pointer-events: auto;
     opacity: 0;
     transform-origin: 0 0;
     will-change: transform;
   }
+  .site-header[data-logo-pos="left"] .site-logo { order: 0; margin-left: 0; margin-right: auto; }
+  .site-header[data-logo-pos="center"] .site-logo { margin-inline: auto; }
   .site-logo img { display: block; width: 100%; height: auto; }
   .site-logo__light {
     position: absolute;
@@ -60,8 +107,134 @@ const { logoPosition = "right" } = Astro.props;
   .site-logo:focus-visible { outline-color: var(--yellow-03); }
   html.is-docked .site-logo,
   html.is-loaded .site-logo { opacity: 1; }
+
+  /* ---------- Navegación ---------- */
+  .site-nav,
+  .menu-toggle {
+    order: 1;
+    pointer-events: auto;
+    color: var(--ink);
+    opacity: 0;
+    transition: opacity 0.6s ease, color 0.25s ease;
+  }
+  html.is-docked .site-nav,
+  html.is-loaded .site-nav,
+  html.is-docked .menu-toggle,
+  html.is-loaded .menu-toggle { opacity: 1; }
+  /* mientras el header está sobre la foto del hero el texto va en blanco */
+  html.nav-over-photo .site-nav,
+  html.nav-over-photo .menu-toggle { color: #fff; }
+
+  .site-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .site-nav a {
+    display: inline-block;
+    padding-bottom: 0.2rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: inherit;
+    border-bottom: 1px solid transparent;
+  }
+  .site-nav a:hover,
+  .site-nav a[aria-current="page"] { border-color: currentColor; }
+
+  .menu-toggle {
+    display: none;
+    padding: 0.4rem 0;
+    font: inherit;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  .menu-toggle:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 4px; }
+  .menu-toggle__close,
+  .menu-toggle[aria-expanded="true"] .menu-toggle__open { display: none; }
+  .menu-toggle[aria-expanded="true"] .menu-toggle__close { display: inline; }
+
+  /* Debajo de este ancho no entran las 7 secciones junto al logo: con JS se
+     colapsan en un menú a pantalla completa (sin JS quedan en la barra). */
+  @media (max-width: 1179px) {
+    html.js .menu-toggle { display: inline-flex; z-index: 2; }
+    html.js .site-nav {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      padding: 0 var(--gutter);
+      background: var(--bg);
+      color: var(--ink);
+    }
+    html.js .site-nav:not(.is-open) { opacity: 0; visibility: hidden; }
+    html.js .site-nav.is-open { opacity: 1; visibility: visible; }
+    html.js .site-nav ul { flex-direction: column; flex-wrap: nowrap; gap: 0.75rem; }
+    html.js .site-nav a {
+      font-family: var(--font-detail);
+      font-size: clamp(2rem, 8vw, 3.5rem);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      text-transform: none;
+    }
+    html.menu-open { overflow: hidden; }
+    html.menu-open .menu-toggle { color: var(--ink); }
+  }
 </style>
 
 <script>
   import "../scripts/logo-scroll.js";
+
+  const root = document.documentElement;
+  root.classList.add("js");
+
+  const toggle = document.querySelector<HTMLButtonElement>(".menu-toggle");
+  const menu = document.getElementById("site-menu");
+
+  if (toggle && menu) {
+    const links = () => Array.from(menu.querySelectorAll<HTMLElement>("a"));
+
+    function setOpen(open: boolean) {
+      menu!.classList.toggle("is-open", open);
+      root.classList.toggle("menu-open", open);
+      toggle!.setAttribute("aria-expanded", String(open));
+      if (open) links()[0]?.focus();
+    }
+
+    toggle.addEventListener("click", () => setOpen(toggle.getAttribute("aria-expanded") !== "true"));
+
+    document.addEventListener("keydown", (e) => {
+      if (toggle.getAttribute("aria-expanded") !== "true") return;
+      if (e.key === "Escape") {
+        setOpen(false);
+        toggle.focus();
+        return;
+      }
+      // el foco se queda dentro del menú abierto: botón y links
+      if (e.key === "Tab") {
+        const stops = [toggle, ...links()];
+        const i = stops.indexOf(document.activeElement as HTMLElement);
+        if (e.shiftKey && i <= 0) {
+          e.preventDefault();
+          stops[stops.length - 1].focus();
+        } else if (!e.shiftKey && i === stops.length - 1) {
+          e.preventDefault();
+          stops[0].focus();
+        }
+      }
+    });
+
+    // al pasar a ancho de escritorio con el menú abierto, se cierra
+    window.matchMedia("(min-width: 1180px)").addEventListener("change", (e) => {
+      if (e.matches) setOpen(false);
+    });
+  }
 </script>

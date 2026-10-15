@@ -6,3 +6,6 @@
 
 /recursos-marca/*
   Cache-Control: public, max-age=86400
+
+/video/*
+  Cache-Control: public, max-age=86400

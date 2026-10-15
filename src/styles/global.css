@@ -38,6 +38,16 @@
   --font-detail: "Cormorant Garamond", Georgia, serif;
   --font-body: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
+  /* Escala de texto de las páginas internas (Obras, Qué hacemos, Cómo
+     trabajamos): todas usan estos valores, no tamaños propios. */
+  --fs-title: clamp(2.75rem, 9vw, 9rem);       /* h1 de página (Degular) */
+  --fs-lead: clamp(1.5rem, 2.8vw, 2.5rem);     /* bajada grande (Cormorant) */
+  --fs-body: clamp(1rem, 1.35vw, 1.25rem);     /* párrafo de introducción */
+  --fs-row: clamp(1rem, 1.25vw, 1.15rem);      /* texto dentro de un renglón */
+  --fs-item: clamp(1.5rem, 2.7vw, 2.75rem);    /* título de renglón (Degular) */
+  --fs-card: clamp(1.4rem, 2.4vw, 2.25rem);    /* nombre de obra en fichas */
+  --fs-small: 0.8rem;                          /* números, etiquetas, filtros */
+
   --gutter: clamp(1.25rem, 4vw, 3rem);
   --logo-w: clamp(150px, 22vw, 260px);
 }
@@ -73,6 +83,132 @@ a {
 a:hover,
 a:focus-visible { border-color: var(--ink); }
 a:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 4px; }
+
+/* Tildes y ñ de Degular (la demo no las trae): la marca se dibuja sobre la
+   letra base. Ver src/lib/degular.ts. */
+.dw { white-space: nowrap; }
+.acc {
+  position: relative;
+  display: inline-block;
+}
+.acc::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  background: currentColor;
+  pointer-events: none;
+}
+.acc--acute::after {
+  top: 0.12em;
+  width: 0.24em;
+  height: 0.085em;
+  border-radius: 0.5px;
+  transform: translateX(-15%) rotate(-38deg);
+}
+/* el trazo de la tilde de la ñ es más grueso: el mismo grosor que las
+   barras de la fuente */
+.acc--tilde::after {
+  top: 0.08em;
+  width: 0.5em;
+  height: 0.2em;
+  transform: translateX(-50%);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 20'%3E%3Cpath d='M5 14 C11 3 18 3 25 10 S39 17 45 6' fill='none' stroke='black' stroke-width='7.5' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 20'%3E%3Cpath d='M5 14 C11 3 18 3 25 10 S39 17 45 6' fill='none' stroke='black' stroke-width='7.5' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+
+/* ¿ ? ¡ ! que la demo de Degular no trae: tipografía del cuerpo en bold */
+.dp {
+  font-family: var(--font-body);
+  font-weight: 700;
+}
+
+/* Degular en mayúsculas (.caps): la marca va más arriba que sobre minúsculas */
+.caps { text-transform: uppercase; }
+.caps .acc--acute::after {
+  top: 0.02em;
+  transform: translateX(10%) rotate(-38deg);
+}
+.caps .acc--tilde::after { top: -0.07em; }
+
+/* Títulos y textos de página: un solo estilo para todas las páginas internas.
+   El h1 va en Degular (la demo no trae tildes: usar degular() de
+   src/lib/degular.ts cuando las lleve). */
+.page-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  line-height: 0.98;
+  letter-spacing: -0.015em;
+}
+.page-lead {
+  margin: 0;
+  font-family: var(--font-detail);
+  font-size: var(--fs-lead);
+  line-height: 1.15;
+  color: var(--grey-dark);
+}
+.page-text {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--grey-dark);
+}
+
+/* Link de acción con flecha ↗ (subrayado fino). */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.3rem;
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--ink);
+}
+.link-arrow svg { transition: transform 0.25s ease, opacity 0.4s ease; }
+
+/* Tipeo de los enlaces con flecha (ver src/scripts/type-links.js): el texto
+   reserva su ancho con una copia invisible y se escribe encima. La flecha
+   aparece al terminar (menos en el de volver, que lleva la flecha adelante). */
+.ty { position: relative; display: inline-block; }
+.ty__ghost { visibility: hidden; }
+.ty__live {
+  position: absolute;
+  inset: 0;
+  text-align: left;
+  white-space: nowrap;
+}
+.link-arrow.ty-typing .ty__live::after {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.12em;
+  background: currentColor;
+  animation: ty-caret 0.8s steps(1) infinite;
+}
+.link-arrow.ty-on:not(.link-arrow--back) svg { opacity: 0; }
+.link-arrow.ty-on.ty-done:not(.link-arrow--back) svg { opacity: 1; }
+@keyframes ty-caret { 50% { opacity: 0; } }
+.link-arrow:hover svg,
+.link-arrow:focus-visible svg { transform: translate(2px, -2px); }
+
+/* Aparición al scrollear (páginas internas): el script agrega .js al <html> y
+   .is-in a cada elemento cuando entra en pantalla. */
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal] { opacity: 1; transform: none; }
+}
 
 .sr-only {
   position: absolute;

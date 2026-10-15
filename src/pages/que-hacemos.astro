@@ -1,0 +1,383 @@
+---
+import Base from "../layouts/Base.astro";
+import ProyectoCta from "../components/ProyectoCta.astro";
+import { degular } from "../lib/degular";
+
+const servicios = [
+  {
+    titulo: "Planificación y presupuesto",
+    texto:
+      "Estudiamos el proyecto y sus definiciones para establecer el alcance de los trabajos, los costos y las etapas de obra. Esa planificación nos permite anticipar las necesidades de la construcción y tomar decisiones junto al cliente.",
+    etiquetas: ["Planificación del proyecto", "Armado de presupuesto", "Asesoría en materiales"],
+  },
+  {
+    titulo: "Construcción y ejecución",
+    texto:
+      "Llevamos el proyecto a obra cuidando cada decisión de diseño. Trabajamos sobre la preparación de los materiales, los encuentros constructivos y las terminaciones, con seguimiento de la ejecución en cada etapa.",
+    etiquetas: [],
+  },
+  {
+    titulo: "Gestión y coordinación",
+    texto:
+      "Coordinamos al equipo, los proveedores y los materiales para que cada trabajo se realice en el momento que corresponde. Mantenemos una comunicación directa con el cliente y el estudio de arquitectura para resolver las definiciones que acompañan el avance de la obra.",
+    etiquetas: [
+      "Colaboración con estudios de arquitectura",
+      "Gestión de permisos y licencias",
+      "Coordinación de proveedores",
+    ],
+  },
+  {
+    titulo: "Supervisión y seguimiento",
+    texto:
+      "Supervisamos los trabajos en obra y verificamos que se ejecuten de acuerdo con el proyecto. Compartimos los avances con el cliente y el estudio de arquitectura, y damos seguimiento a las definiciones pendientes para las próximas etapas.",
+    etiquetas: ["Supervisión de obra", "Inspección y control de calidad"],
+  },
+  {
+    titulo: "Diseño interior y paisajismo",
+    texto:
+      "Integramos el diseño interior y los espacios exteriores al proyecto, coordinando materiales, equipamiento y vegetación con la arquitectura.",
+    etiquetas: ["Diseño interior", "Paisajismo"],
+  },
+  {
+    titulo: "Terminaciones y entrega",
+    texto:
+      "Revisamos las terminaciones y el funcionamiento de las instalaciones. Coordinamos los ajustes finales y recorremos la obra con el cliente antes de la entrega.",
+    etiquetas: ["Entrega llave en mano"],
+  },
+];
+---
+
+<Base
+  title="Qué hacemos - Belfast CM"
+  description="Planificación y presupuesto, construcción y ejecución, gestión y coordinación, supervisión, diseño interior y paisajismo, y entrega llave en mano."
+  path="/que-hacemos"
+>
+  <main class="hacemos-page">
+    <header class="hacemos-head">
+      <!-- Degular con la tilde dibujada aparte (la demo no la trae); el nombre
+           accesible va en aria-label para que se lea bien -->
+      <h1 class="hacemos-title page-title" aria-label="Qué hacemos" data-reveal>
+        <span aria-hidden="true" set:html={degular("Qué hacemos")} />
+      </h1>
+      <p class="hacemos-lead page-lead" data-reveal>Cada proyecto necesita una forma de trabajo propia.</p>
+      <p class="hacemos-intro page-text" data-reveal>
+        Definimos qué necesitás y organizamos la obra en función de ese alcance.
+      </p>
+    </header>
+
+    <!-- Bloque fijo: la sección es alta y el listado queda pegado mientras se
+         scrollea; los servicios entran de a uno (ver el script) -->
+    <div class="svc-scene" data-svc-scene>
+    <div class="svc-stage">
+    <ol class="svc-list" data-svc>
+      {
+        servicios.map((s, i) => (
+          <li class="svc">
+            <h2 class="svc__heading">
+              <button
+                type="button"
+                class="svc__head"
+                id={`svc-btn-${i}`}
+                aria-label={s.titulo}
+                aria-expanded="false"
+                aria-controls={`svc-panel-${i}`}
+              >
+                <span class="svc__num" aria-hidden="true">{`0${i + 1}`}</span>
+                <span class="svc__title caps" aria-hidden="true" set:html={degular(s.titulo)} />
+                <span class="svc__plus" aria-hidden="true"></span>
+              </button>
+            </h2>
+            <div class="svc__panel" id={`svc-panel-${i}`} role="region" aria-labelledby={`svc-btn-${i}`}>
+              <div class="svc__panel-inner">
+                <p class="svc__text">{s.texto}</p>
+                {s.etiquetas.length > 0 && (
+                  <ul class="svc__tags">
+                    {s.etiquetas.map((e) => (
+                      <li>{e}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+    </div>
+    </div>
+  </main>
+
+  <ProyectoCta
+    title="¿Ya tenés un proyecto de arquitectura?"
+    text="Nos integramos como equipo constructor y trabajamos junto a tu arquitecto o estudio. Coordinamos las decisiones técnicas y la ejecución para llevar a la realidad el diseño que desarrollaron."
+    label="Conversemos sobre tu obra"
+    line={false}
+  />
+</Base>
+
+<style is:global>
+  .hacemos-page {
+    padding: clamp(7rem, 16vw, 11rem) var(--gutter) clamp(4rem, 8vw, 7rem);
+  }
+
+  /* ---------- Encabezado ---------- */
+  .hacemos-head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    margin-bottom: clamp(3.5rem, 8vw, 7rem);
+  }
+  .hacemos-lead {
+    margin-top: clamp(0.5rem, 2vw, 1.5rem);
+    max-width: 22em;
+  }
+
+  /* ---------- Servicios ----------
+     Base (sin JS): todo desplegado, una cosa debajo de la otra. */
+  .svc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  /* sin línea de cierre abajo: la separa la línea de arriba del bloque final */
+  .svc { border-top: 1px solid var(--grey-line); }
+  .svc__heading { margin: 0; font: inherit; }
+  .svc__head {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr auto;
+    align-items: baseline;
+    gap: 1rem;
+    width: 100%;
+    padding: clamp(1.1rem, 2vw, 1.6rem) 0;
+    font: inherit;
+    text-align: left;
+    color: inherit;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  .svc__head:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 4px; }
+  .svc__num {
+    font-size: var(--fs-small);
+    letter-spacing: 0.06em;
+    color: var(--grey-mid);
+  }
+  /* Degular en mayúsculas; las tildes y la Ñ se dibujan aparte (ver
+     src/lib/degular.ts). El gris apagado supera 3:1 sobre blanco, el mínimo
+     para texto grande. */
+  .svc__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-item);
+    line-height: 1.08;
+    letter-spacing: -0.005em;
+    text-transform: uppercase;
+    text-wrap: balance;
+    color: var(--ink);
+    transition: color 0.25s ease;
+  }
+  .svc__plus { display: none; }
+
+  /* el espacio de abajo va como margen del último elemento (no como padding)
+     para que el panel cerrado mida exactamente 0 */
+  .svc__panel-inner {
+    padding: 0 0 0 calc(2.5rem + 1rem);
+    max-width: 52rem;
+  }
+  .svc__panel-inner > :last-child { margin-bottom: clamp(1.5rem, 3vw, 2.25rem); }
+  .svc__text {
+    margin: 0;
+    max-width: 46ch;
+    font-size: var(--fs-row);
+    line-height: 1.6;
+    color: var(--grey-dark);
+  }
+  .svc__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0;
+    list-style: none;
+    margin: 1.1rem 0 0;
+    padding: 0;
+    font-size: var(--fs-small);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--grey-mid);
+  }
+  .svc__tags li:not(:last-child)::after {
+    content: "·";
+    margin: 0 0.7rem;
+  }
+
+  /* ---------- Con JS ---------- */
+  .svc-list--js .svc__title { color: #929292; }
+  .svc-list--js .svc.is-open .svc__title,
+  .svc-list--js .svc__head:focus-visible .svc__title { color: var(--ink); }
+
+  /* Celular / tablet táctil: acordeón. Al tocar un servicio se despliega su
+     texto (los demás se cierran). */
+  .svc-list--js:not(.svc-list--side) .svc__plus {
+    display: block;
+    position: relative;
+    width: 1rem;
+    height: 1rem;
+    align-self: center;
+  }
+  .svc-list--js:not(.svc-list--side) .svc__plus::before,
+  .svc-list--js:not(.svc-list--side) .svc__plus::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transition: transform 0.3s ease;
+  }
+  .svc-list--js:not(.svc-list--side) .svc__plus::after { transform: rotate(90deg); }
+  .svc-list--js:not(.svc-list--side) .svc.is-open .svc__plus::after { transform: rotate(0deg); }
+
+  /* Apertura de la bajada (los dos modos): el panel pasa de alto 0 a su alto
+     real. */
+  .svc-list--js .svc__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .svc-list--js .svc.is-open .svc__panel { grid-template-rows: 1fr; }
+  .svc-list--js .svc__panel-inner {
+    overflow: hidden;
+    min-height: 0;
+    visibility: hidden;
+    transition: visibility 0s 0.4s;
+  }
+  .svc-list--js .svc.is-open .svc__panel-inner {
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  /* Escritorio con mouse: cada renglón ocupa todo el ancho (la línea llega al
+     margen derecho) y, al pasar por encima del título, su bajada aparece a la
+     derecha, dentro del mismo renglón y alineada con el título. */
+  .svc-list--side .svc {
+    display: grid;
+    grid-template-columns: 52% 1fr;
+    align-items: start;
+  }
+  .svc-list--side .svc__head { cursor: default; }
+  .svc-list--side .svc__panel-inner { padding-left: 0; }
+  .svc-list--side .svc__text {
+    /* mismo aire de arriba que el título, así el texto arranca a su altura */
+    margin-top: clamp(1.1rem, 2vw, 1.6rem);
+    max-width: 40ch;
+  }
+
+  /* ---------- Bloque fijo con aparición atada al scroll (JS) ----------
+     Igual que el slogan y la presentación del inicio: la sección es alta, el
+     listado queda pegado y, mientras se scrollea, cada servicio entra en orden
+     (--p va de 0 a 1 en cada fila). Sin JS, con poco alto de pantalla o con
+     reduced-motion queda el listado normal, en flujo. */
+  .svc-scene--anim { height: calc(100svh + 60svh); }
+  .svc-scene--anim .svc-stage {
+    position: sticky;
+    top: var(--scene-top);
+  }
+  /* la entrada de cada fila (--p) vale en los dos casos: fijo, o en flujo
+     cuando la pantalla es baja (celular) */
+  .svc-scene--rise .svc {
+    opacity: var(--p, 0);
+    transform: translateY(calc((1 - var(--p, 0)) * 36px));
+    will-change: transform, opacity;
+  }
+  /* mientras no entró, no se puede abrir ni enfocar */
+  .svc-scene--rise .svc.is-wait { visibility: hidden; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .svc-list--js .svc__panel { transition: none; }
+  }
+</style>
+
+<script>
+  import { stageRows } from "../scripts/stage-rows.js";
+
+  const list = document.querySelector<HTMLElement>("[data-svc]");
+
+  if (list) {
+    const items = Array.from(list.querySelectorAll<HTMLElement>(".svc"));
+    const heads = items.map((li) => li.querySelector<HTMLButtonElement>(".svc__head")!);
+    const wide = window.matchMedia("(min-width: 900px) and (hover: hover) and (pointer: fine)");
+    // escritorio: todo cerrado hasta que el mouse (o el teclado) está sobre una
+    // fila; táctil: acordeón con el primero abierto
+    let open = wide.matches ? -1 : 0;
+
+    function render() {
+      items.forEach((li, i) => li.classList.toggle("is-open", i === open));
+      heads.forEach((b, i) => b.setAttribute("aria-expanded", String(i === open)));
+    }
+
+    function setMode() {
+      list!.classList.toggle("svc-list--side", wide.matches);
+      open = wide.matches ? -1 : 0;
+      render();
+    }
+
+    list.classList.add("svc-list--js");
+    setMode();
+    wide.addEventListener("change", setMode);
+
+    // en escritorio, cuando el mouse sale de la lista o el foco se va a otro
+    // lado, se cierra la bajada
+    list.addEventListener("pointerleave", (e) => {
+      if (!wide.matches || e.pointerType !== "mouse") return;
+      open = -1;
+      render();
+    });
+    list.addEventListener("focusout", (e) => {
+      if (!wide.matches || list.contains(e.relatedTarget as Node | null)) return;
+      open = -1;
+      render();
+    });
+
+    // ----- bloque fijo con aparición por scroll (ver scripts/stage-rows.js) -----
+    const scene = document.querySelector<HTMLElement>("[data-svc-scene]");
+    const stage = scene?.querySelector<HTMLElement>(".svc-stage");
+    if (scene && stage) {
+      const panels = items.map((li) => li.querySelector<HTMLElement>(".svc__panel-inner")!);
+      // cuánto crece la lista al abrir una fila: en escritorio la bajada va al
+      // costado, dentro del renglón, así que solo suma lo que pasa de su alto
+      const grow = (i: number) =>
+        wide.matches ? Math.max(0, panels[i].scrollHeight - heads[i].offsetHeight) : panels[i].scrollHeight;
+      stageRows({
+        scene,
+        stage,
+        list,
+        items,
+        prefix: "svc-scene",
+        extra: () => Math.max(...panels.map((_, i) => grow(i))),
+        current: () => (open >= 0 ? grow(open) : 0),
+      });
+    }
+
+    heads.forEach((b, i) => {
+      // escritorio: se elige con el mouse o con el teclado; táctil: se
+      // toca para abrir o cerrar
+      b.addEventListener("click", () => {
+        open = wide.matches ? i : open === i ? -1 : i;
+        render();
+      });
+      b.addEventListener("focus", () => {
+        if (!wide.matches) return;
+        open = i;
+        render();
+      });
+    });
+    items.forEach((li, i) => {
+      li.addEventListener("pointerenter", (e) => {
+        if (!wide.matches || e.pointerType !== "mouse" || open === i) return;
+        open = i;
+        render();
+      });
+    });
+  }
+</script>

@@ -138,6 +138,33 @@ async function loadPieces() {
   return Array.from(svg.querySelectorAll("path"));
 }
 
+// El inicio siempre corre el loader completo. En las páginas internas corre el
+// completo la primera vez que se entra al sitio (en esa pestaña) y después una
+// versión rápida del mismo recorrido: sin la grilla de fondo y con el trazo,
+// el relleno y el viaje al header acelerados (~4 s contra ~9 s).
+const SEEN_KEY = "belfast-loader-visto";
+const IS_HOME = window.location.pathname === "/";
+const QUICK = (() => {
+  if (IS_HOME) return false;
+  try {
+    return sessionStorage.getItem(SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+})();
+const markSeen = () => {
+  try {
+    sessionStorage.setItem(SEEN_KEY, "1");
+  } catch {
+    /* sin sessionStorage (modo privado, etc.): siempre corre el completo */
+  }
+};
+const K = QUICK ? { fill: 0.7, move: 0.85 } : { fill: 1, move: 1 };
+// velocidad de trazo extra por pieza en la versión rápida: las cuatro chicas un
+// poco más rápido y la última (la más larga) más despacio, que si no pasaba
+// demasiado rápido. En el loader completo todas valen 1.
+const QUICK_SPEED = QUICK ? [3, 3, 3, 3, 1.7] : [1, 1, 1, 1, 1];
+
 const PIECE_SPEED = [0.9, 0.9, 0.9, 0.9, 1.82];
 const PIECE_FILL = [900, 900, 900, 900, 450];
 const PIECE_FILL_AT = [1, 1, 1, 1, 0.85];
@@ -157,7 +184,7 @@ function convergePieces(paths) {
     const cy = b.y + b.height / 2;
     const tx = WM_LEFT + ((cx - ISO_LEFT) / (ISO_RIGHT - ISO_LEFT)) * (WM_RIGHT - WM_LEFT);
     p.style.transformOrigin = "0 0";
-    p.style.transition = `transform 1100ms cubic-bezier(.65,0,.35,1) ${i * 120}ms, opacity 400ms ease ${700 + i * 120}ms`;
+    p.style.transition = `transform ${1100 * K.move}ms cubic-bezier(.65,0,.35,1) ${i * 120 * K.move}ms, opacity ${400 * K.move}ms ease ${(700 + i * 120) * K.move}ms`;
     p.style.transform = `translate(${tx}px,${WM_CY}px) scale(${SCALE}) translate(${-cx}px,${-cy}px)`;
     p.style.opacity = "0";
   });
@@ -169,8 +196,9 @@ function drawPieces(paths) {
   let lastDrawEnd = 0;
   return new Promise((resolve) => {
     paths.forEach((p, i) => {
-      const draw = lens[i] / PIECE_SPEED[i];
-      p.style.transition = `stroke-dashoffset ${Math.round(draw)}ms linear, fill ${PIECE_FILL[i]}ms ease, stroke ${PIECE_FILL[i]}ms ease`;
+      const draw = lens[i] / (PIECE_SPEED[i] * QUICK_SPEED[i]);
+      const fillMs = Math.round(PIECE_FILL[i] * K.fill);
+      p.style.transition = `stroke-dashoffset ${Math.round(draw)}ms linear, fill ${fillMs}ms ease, stroke ${fillMs}ms ease`;
       setTimeout(() => p.classList.add("drawn"), start);
       setTimeout(() => p.classList.add("filled"), start + draw * PIECE_FILL_AT[i]);
       lastDrawEnd = Math.max(lastDrawEnd, start + draw);
@@ -207,43 +235,56 @@ function finish() {
 async function run() {
   window.scrollTo(0, 0);
   await waitForLayout();
+  markSeen();
 
   if (reducedMotion) {
     finish();
     return;
   }
 
-  const lines = setupBlueprintLines();
+  if (QUICK) {
+    // sin grilla de fondo
+    blueprintSvg.style.display = "none";
+    await sleep(60);
+  } else {
+    const lines = setupBlueprintLines();
 
-  // 1) primero se dibuja toda la grilla de fondo, sola
-  await sleep(300);
-  revealBlueprintLines(lines);
+    // 1) primero se dibuja toda la grilla de fondo, sola
+    await sleep(300);
+    revealBlueprintLines(lines);
 
-  // 2) recién ahí se traza el contorno del logo
-  await sleep(GRID_TOTAL_DELAY + 400);
+    // 2) recién ahí se traza el contorno del logo
+    await sleep(GRID_TOTAL_DELAY + 400);
+  }
+
   const paths = await loadPieces();
   await drawPieces(paths);
 
-  blueprintSvg.classList.add("is-faded");
-  await sleep(600);
+  if (!QUICK) blueprintSvg.classList.add("is-faded");
+  await sleep(600 * K.move);
 
   // 3) las piezas viajan al wordmark y todo sube hasta el header
   logoWordmark.classList.add("revealed");
   logoWrap.classList.add("is-wordmark-only");
+  if (QUICK) {
+    logoWordmark.style.transitionDelay = "0s";
+    logoWrap.style.transitionDuration = `${1.1 * K.move}s`;
+  }
   convergePieces(paths);
   dockToHeaderLogo();
 
-  await sleep(1100);
+  await sleep(1100 * K.move);
 
   // 4) traspaso: el logo real (blanco) ya está en su lugar debajo del
   // loader; mientras el fondo blanco se desvanece y descubre la foto, el
   // wordmark negro se funde con él
   root.classList.add("is-docked");
-  logoWordmark.style.transition = "opacity 0.6s ease";
+  logoWordmark.style.transition = `opacity ${0.6 * K.move}s ease`;
   logoWordmark.style.opacity = "0";
+  if (QUICK) loader.style.transitionDuration = `${0.6 * K.move}s`;
   loader.classList.add("is-transparent");
 
-  await sleep(900);
+  await sleep(900 * K.move);
   finish();
 }
 

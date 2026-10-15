@@ -1,0 +1,57 @@
+---
+// El bloque se reutiliza en varias páginas; sin props muestra el texto general.
+const {
+  title = "¿Tenés un proyecto en mente?",
+  text = "Contanos qué querés construir y en qué etapa estás. Conversemos sobre cómo podemos trabajar juntos.",
+  label = "Consultar por mi proyecto",
+  href = "/contacto",
+  line = true,
+} = Astro.props;
+---
+
+<section class:list={["proyecto", { "proyecto--sin-linea": !line }]} aria-labelledby="proyecto-title">
+  <div class="proyecto__inner">
+    <!-- Cormorant y no Degular: el título lleva ¿ y tilde, que la demo de
+         Degular no trae -->
+    <h2 class="proyecto__title" id="proyecto-title" data-reveal>{title}</h2>
+    <p class="proyecto__text" data-reveal>{text}</p>
+    <a class="link-arrow proyecto__cta" href={href} data-reveal>
+      <span>{label}</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+        <path d="M3 11 11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3" />
+      </svg>
+    </a>
+  </div>
+</section>
+
+<style is:global>
+  .proyecto {
+    padding: clamp(6rem, 14vw, 12rem) var(--gutter);
+    border-top: 1px solid var(--grey-line);
+  }
+  .proyecto--sin-linea { border-top: 0; }
+  .proyecto__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    max-width: 72rem;
+  }
+  .proyecto__title {
+    margin: 0;
+    max-width: 14em;
+    font-family: var(--font-detail);
+    font-weight: 400;
+    font-size: clamp(2.5rem, 7vw, 6.5rem);
+    line-height: 1;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .proyecto__text {
+    margin: 0;
+    max-width: 46ch;
+    font-size: clamp(1rem, 1.35vw, 1.25rem);
+    line-height: 1.55;
+    color: var(--grey-dark);
+  }
+</style>

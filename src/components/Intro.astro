@@ -1,0 +1,119 @@
+---
+---
+
+<section class="intro" aria-labelledby="intro-title">
+  <div class="intro__stage">
+    <div class="intro__inner">
+      <h2 class="intro__title" id="intro-title">Construimos y gestionamos tu obra.</h2>
+      <p class="intro__text">
+        Nos ocupamos de la planificación, la construcción y el seguimiento de tu obra. Trabajamos junto
+        a propietarios y estudios de arquitectura, desde las primeras definiciones hasta la entrega.
+      </p>
+      <a class="link-arrow intro__cta" href="/contacto">
+        <span>Contanos tu proyecto</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+          <path d="M3 11 11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  /* Base (sin JS o con reduced-motion): el bloque completo, en flujo normal. */
+  .intro__stage {
+    padding: clamp(6rem, 16vw, 13rem) var(--gutter);
+  }
+  .intro__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    max-width: 72rem;
+  }
+
+  /* Degular (la fuente demo solo trae a-z, A-Z, números y . ,): el título no
+     puede llevar tildes ni signos de apertura/cierre */
+  .intro__title {
+    margin: 0;
+    max-width: 12em;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.5rem, 6.4vw, 6.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .intro__text {
+    margin: 0;
+    max-width: 46ch;
+    font-size: clamp(1rem, 1.35vw, 1.25rem);
+    line-height: 1.55;
+    color: var(--grey-dark);
+  }
+
+  /* ---------- Bloque fijo con aparición atada al scroll (JS) ----------
+     Igual que el slogan: la sección es alta, el escenario queda pegado y,
+     mientras se scrollea, entran en orden el título (con un desplazamiento
+     breve), el párrafo completo y el acceso. */
+  .intro--anim {
+    height: calc(100svh + 150svh);
+  }
+  .intro--anim .intro__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: flex;
+    align-items: center;
+    padding-block: 0;
+  }
+  .intro--anim .intro__title {
+    opacity: var(--a, 0);
+    transform: translateY(calc((1 - var(--a, 0)) * 80px));
+    will-change: transform, opacity;
+  }
+  .intro--anim .intro__text {
+    opacity: var(--b, 0);
+    transform: translateY(calc((1 - var(--b, 0)) * 20px));
+  }
+  .intro--anim .intro__cta {
+    opacity: var(--c, 0);
+    transform: translateY(calc((1 - var(--c, 0)) * 20px));
+  }
+</style>
+
+<script>
+  const intro = document.querySelector<HTMLElement>(".intro");
+  const stage = document.querySelector<HTMLElement>(".intro__stage");
+
+  if (intro && stage && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+    // tramo del recorrido (0 a 1) en el que aparece cada pieza
+    const range = (p: number, from: number, to: number) => clamp((p - from) / (to - from), 0, 1);
+    let ticking = false;
+
+    function update() {
+      ticking = false;
+      const total = intro!.offsetHeight - stage!.offsetHeight;
+      const p = clamp(-intro!.getBoundingClientRect().top / total, 0, 1);
+      intro!.style.setProperty("--a", range(p, 0.0, 0.35).toFixed(3));
+      intro!.style.setProperty("--b", range(p, 0.3, 0.6).toFixed(3));
+      intro!.style.setProperty("--c", range(p, 0.55, 0.8).toFixed(3));
+    }
+
+    intro.classList.add("intro--anim");
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    window.addEventListener("resize", update);
+    update();
+  }
+</script>

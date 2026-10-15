@@ -1,0 +1,418 @@
+---
+import Base from "../layouts/Base.astro";
+import { degular } from "../lib/degular";
+
+const pilares = [
+  {
+    nombre: "Misión",
+    texto:
+      "Construir y gestionar obras que respondan a cada proyecto, cuidando su ejecución y acompañando al cliente hasta la entrega.",
+  },
+  {
+    nombre: "Visión",
+    texto:
+      "Consolidar una forma de construir reconocida por la calidad del trabajo, la organización de la obra y las relaciones que construimos con nuestros clientes.",
+  },
+  {
+    nombre: "Confianza",
+    texto:
+      "Mantenemos una comunicación directa con el cliente y el estudio de arquitectura. Compartimos los avances y las decisiones de cada etapa para que sepan cómo sigue su obra.",
+  },
+  {
+    nombre: "Calidad",
+    texto:
+      "Cuidamos la elección de los materiales, su aplicación y la ejecución de los trabajos, desde la estructura hasta las terminaciones.",
+  },
+  {
+    nombre: "Compromiso",
+    texto:
+      "Nos involucramos en cada obra y damos seguimiento a los acuerdos, los tiempos y los trabajos hasta la entrega.",
+  },
+  {
+    nombre: "Innovación",
+    texto:
+      "Evaluamos materiales, sistemas y soluciones constructivas que puedan aportar al proyecto y mejorar su ejecución.",
+  },
+];
+---
+
+<Base
+  title="Nosotros - Belfast CM"
+  description="Somos Belfast: construimos y gestionamos obras junto a propietarios y estudios de arquitectura, con más de 30 años en el rubro."
+  path="/nosotros"
+>
+  <!-- Isotipo (sin texto) que acompaña al cursor; solo con mouse -->
+  <div class="nos-iso" aria-hidden="true" data-iso>
+    <svg viewBox="425 580 825 485" xmlns="http://www.w3.org/2000/svg">
+      <path d="M463.04,926.86C447.55,924.29 436.85,914.05 434.01,899.08L433.00,893.73L433.00,817.36L433.00,741.00L555.50,741.00L678.00,741.00L678.00,834.50L678.00,928.00L573.25,927.88C515.64,927.82 466.04,927.36 463.04,926.86Z"></path>
+      <path d="M513.00,688.19L513.00,642.06L518.52,638.53C526.59,633.37 600.10,589.00 600.59,589.00C600.81,589.00 601.00,621.40 601.00,661.00L601.00,733.00L578.16,733.00C565.60,733.00 545.80,733.30 534.16,733.66L513.00,734.32L513.00,688.19Z"></path>
+      <path d="M743.27,1021.73L688.03,989.50L688.02,880.91C688.01,821.19 688.29,764.94 688.66,755.91L689.31,739.50L730.81,714.50C771.87,689.76 798.62,674.00 799.53,674.00C799.79,674.00 800.00,759.50 800.00,864.00C800.00,968.50 799.66,1053.99 799.25,1053.98C798.84,1053.97 773.65,1039.46 743.27,1021.73Z"></path>
+      <path d="M613.00,661.25L613.00,589.00L777.00,589.00L941.00,589.00L941.00,625.00L941.00,661.00L870.38,661.00L799.77,661.00L739.48,696.96L679.20,732.92L646.10,733.21L613.00,733.50L613.00,661.25Z"></path>
+      <path d="M810.00,864.53L810.00,671.00L1025.52,671.00L1241.03,671.00L1240.77,836.75L1240.50,1002.50L1237.79,1010.50C1230.22,1032.78 1213.52,1048.72 1190.50,1055.63L1184.50,1057.43L997.25,1057.74L810.00,1058.05L810.00,864.53ZM1140.50,991.79C1163.77,983.89 1180.13,966.46 1186.07,943.23L1188.00,935.68L1188.00,907.34L1188.00,879.00L1025.50,879.00L863.00,879.00L863.00,937.02L863.00,995.05L997.75,994.77L1132.50,994.50L1140.50,991.79ZM1137.50,847.69C1161.92,840.45 1179.97,822.06 1186.07,798.23L1188.00,790.68L1188.00,762.34L1188.00,734.00L1025.50,734.00L863.00,734.00L863.00,792.03L863.00,850.06L997.25,849.76L1131.50,849.47L1137.50,847.69Z"></path>
+    </svg>
+  </div>
+
+  <main class="nosotros">
+    <header class="nos-head">
+      <!-- Degular con tildes dibujadas aparte (la demo no las trae); el nombre
+           accesible va en aria-label -->
+      <h1 class="nos-title page-title" aria-label="Quiénes somos" data-reveal>
+        <span aria-hidden="true" set:html={degular("Quiénes somos")} />
+      </h1>
+    </header>
+
+    <!-- Bloque fijo: el texto queda pegado y entra por partes al scrollear (ver
+         scripts/stage-rows.js) -->
+    <section class="somos-scene" data-somos-scene aria-label="Somos Belfast">
+      <div class="somos-stage">
+        <div class="somos" data-somos>
+          <h2 class="somos__name caps" aria-label="Somos Belfast.">
+            <span aria-hidden="true" set:html={degular("Somos Belfast.")} />
+          </h2>
+          <p class="somos__lead page-lead">
+            Construimos y gestionamos obras junto a propietarios y estudios de arquitectura.
+          </p>
+          <p class="somos__fact caps" aria-label="Tenemos más de 30 años en el rubro.">
+            <span aria-hidden="true" set:html={degular("Tenemos más de 30 años en el rubro.")} />
+          </p>
+          <div class="somos__text">
+            <p class="page-text">
+              Nuestro trabajo está en la obra: en la coordinación del equipo, en el seguimiento de los
+              trabajos y en el cuidado de los detalles. Acompañamos cada etapa con criterio técnico y una
+              comunicación cercana con quienes nos eligen.
+            </p>
+            <p class="page-text">
+              Nos eligen por la calidad del trabajo, el cumplimiento de plazos, la cercanía en el trato y la
+              confianza que generamos.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pilares: un solo pilar a la vez, centrado; cambian con el scroll. Sin JS
+         quedan todos en una lista. -->
+    <section class="pilares" data-pilares style={`--n:${pilares.length}`} aria-labelledby="pilares-title">
+      <div class="pilares__stage">
+        <h2 class="pilares__kicker page-lead" id="pilares-title">Nuestros pilares</h2>
+        <ol class="pilares__list">
+          {
+            pilares.map((p) => (
+              <li class="pilar">
+                <h3 class="pilar__name caps" aria-label={p.nombre}>
+                  <span aria-hidden="true" set:html={degular(p.nombre)} />
+                </h3>
+                <p class="pilar__text page-text">{p.texto}</p>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="pilares__count" aria-hidden="true"><span>01</span> / {`0${pilares.length}`}</p>
+      </div>
+    </section>
+
+    <section class="nos-cta">
+      <!-- se tipea solo: lo hace type-links.js en todos los enlaces con flecha -->
+      <a class="link-arrow nos-type" href="/como-trabajamos">
+        <span>Conocé cómo trabajamos</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+          <path d="M3 11 11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3" />
+        </svg>
+      </a>
+    </section>
+  </main>
+</Base>
+
+<style is:global>
+  /* ---------- Página en amarillo ----------
+     El fondo, la barra del header y el pie pasan a amarillo. Sin fotos ni
+     líneas grises. Los dos colores de la página están en estas variables.
+     Elegido: texto e isotipo blancos sobre el tono 2 (#D5B900). Ojo: el
+     contraste es 1,95:1, por debajo de lo que pide WCAG (3:1 en texto grande,
+     4,5:1 en párrafos). Alternativas: --nos-bg: var(--yellow-03) (3,5:1) o
+     --nos-fg: var(--ink) (9,7:1; en ese caso quitar las reglas del logo y el
+     menú blancos de abajo). */
+  html:has(.nosotros) {
+    --nos-bg: var(--yellow-02);
+    --nos-fg: #fff;
+    --nos-iso: #fff;
+  }
+  /* el amarillo va en el body y no en el html: mientras corre el loader la
+     barra de scroll está oculta pero su lugar reservado (scrollbar-gutter), y esa
+     franja de la derecha mostraba el amarillo detrás del loader blanco */
+  html:has(.nosotros) body { background: var(--nos-bg); }
+  html:has(.nosotros) .site-header {
+    background: color-mix(in srgb, var(--nos-bg) 96%, transparent);
+    box-shadow: none;
+  }
+  /* logo y menú en blanco sobre este fondo */
+  html:has(.nosotros) .site-logo__dark { display: none; }
+  html:has(.nosotros) .site-logo__light { clip-path: none !important; }
+  html:has(.nosotros) .site-nav,
+  html:has(.nosotros) .menu-toggle { color: var(--nos-fg); }
+  html:has(.nosotros) .site-nav a:hover,
+  html:has(.nosotros) .site-nav a:focus-visible,
+  html:has(.nosotros) .site-nav a[aria-current] { border-color: var(--nos-fg); }
+  /* el texto queda por encima del isotipo del cursor (que va sobre el amarillo
+     del body y debajo de todo lo demás) */
+  html:has(.nosotros) .site-footer { position: relative; z-index: 1; color: var(--nos-fg); }
+  html:has(.nosotros) a:focus-visible,
+  html:has(.nosotros) .menu-toggle:focus-visible { outline-color: var(--nos-fg); }
+
+  .nosotros {
+    position: relative;
+    z-index: 1;
+    padding: clamp(7rem, 16vw, 11rem) var(--gutter) 0;
+    text-align: center;
+    color: var(--nos-fg);
+  }
+  /* sobre amarillo el gris oscuro pierde contraste: un solo color de texto */
+  .nosotros .page-lead,
+  .nosotros .page-text { color: var(--nos-fg); }
+  .nosotros .page-text {
+    max-width: 46ch;
+    margin-inline: auto;
+    line-height: 1.4; /* interlineado chico */
+  }
+  .nosotros .page-lead { line-height: 1.1; }
+
+  .nos-head { margin-bottom: clamp(3rem, 8vw, 7rem); }
+  .nos-title { text-wrap: balance; }
+
+  /* ---------- Somos Belfast ---------- */
+  .somos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(1.25rem, 2.4vw, 2rem);
+  }
+  .somos__name,
+  .somos__fact {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-item);
+    line-height: 1.08;
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+  }
+  .somos__lead { max-width: 24em; text-wrap: balance; }
+  .somos__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .somos-scene { padding-bottom: clamp(4rem, 8vw, 7rem); }
+
+  /* ---------- Pilares ---------- */
+  .pilares__stage { padding-block: clamp(3rem, 6vw, 5rem); }
+  .pilares__kicker { margin-bottom: clamp(2rem, 5vw, 4rem); }
+  .pilares__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 6vw, 4.5rem);
+  }
+  .pilar__name {
+    margin: 0 0 clamp(0.75rem, 1.6vw, 1.25rem);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-title);
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+  }
+  .pilar__text { max-width: 40ch; }
+  .pilares__count { display: none; }
+
+  /* Con JS: la sección es alta, el escenario queda fijo y un pilar a la vez
+     ocupa el centro. Cada pilar entra y sale con el scroll (--a opacidad,
+     --y desplazamiento, ver el script). */
+  .pilares--anim { height: calc(100svh + var(--n) * 55svh); }
+  .pilares--anim .pilares__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    justify-items: center;
+    padding: clamp(5.5rem, 12svh, 7.5rem) 0 clamp(2rem, 5svh, 3rem);
+  }
+  .pilares--anim .pilares__kicker { margin-bottom: 0; }
+  .pilares--anim .pilares__list {
+    display: grid;
+    place-items: center;
+    gap: 0;
+    width: 100%;
+  }
+  .pilares--anim .pilar {
+    grid-area: 1 / 1;
+    opacity: var(--a, 0);
+    transform: translateY(calc(var(--y, 0) * 1px));
+    will-change: transform, opacity;
+  }
+  .pilares--anim .pilar.is-off { visibility: hidden; }
+  .pilares--anim .pilares__count {
+    display: block;
+    margin: 0;
+    font-size: var(--fs-small);
+    letter-spacing: 0.08em;
+  }
+
+  /* ---------- "Conocé cómo trabajamos" (se tipea: type-links.js) ---------- */
+  .nos-cta {
+    padding: clamp(6rem, 12vw, 10rem) 0 clamp(7rem, 14vw, 12rem);
+    display: flex;
+    justify-content: center;
+  }
+  .nos-type {
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    color: var(--nos-fg); /* los enlaces son negros por defecto */
+    border-bottom-color: var(--nos-fg);
+  }
+
+  /* ---------- Isotipo en el cursor ---------- */
+  .nos-iso {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 0;
+    width: clamp(5rem, 8vw, 8rem);
+    margin: calc(clamp(5rem, 8vw, 8rem) / -2) 0 0 calc(clamp(5rem, 8vw, 8rem) / -2);
+    pointer-events: none;
+    opacity: 0;
+    transform: translate3d(var(--ix, 50vw), var(--iy, 50vh), 0) rotate(var(--ir, 0deg));
+    transition: opacity 0.5s ease;
+    will-change: transform;
+  }
+  .nos-iso.is-on { opacity: 1; }
+  .nos-iso svg { display: block; width: 100%; height: auto; fill: var(--nos-iso); }
+
+  /* ---------- Somos Belfast: bloque fijo (ver stage-rows.js) ---------- */
+  .somos-scene--anim { height: calc(100svh + 80svh); }
+  /* el texto queda centrado en el alto de la pantalla mientras está fijo */
+  .somos-scene--anim .somos-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 4rem; /* el alto del header */
+  }
+  .somos-scene--rise .somos > * {
+    opacity: var(--p, 0);
+    transform: translateY(calc((1 - var(--p, 0)) * 36px));
+    will-change: transform, opacity;
+  }
+  .somos-scene--rise .somos > .is-wait { visibility: hidden; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nos-iso { transition: none; }
+  }
+</style>
+
+<script>
+  import { stageRows } from "../scripts/stage-rows.js";
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+
+  // ----- Somos Belfast: bloque fijo con aparición por scroll -----
+  const scene = document.querySelector<HTMLElement>("[data-somos-scene]");
+  const stage = scene?.querySelector<HTMLElement>(".somos-stage");
+  const list = document.querySelector<HTMLElement>("[data-somos]");
+  if (scene && stage && list) {
+    stageRows({
+      scene,
+      stage,
+      list,
+      items: Array.from(list.children) as HTMLElement[],
+      prefix: "somos-scene",
+      // el texto va centrado en la pantalla: entra mientras queda fijo
+      start: 0.3,
+      stickyTop: 0,
+    });
+  }
+
+  // ----- Pilares: uno a la vez, atado al scroll -----
+  const sec = document.querySelector<HTMLElement>("[data-pilares]");
+  if (sec && !reduced) {
+    const st = sec.querySelector<HTMLElement>(".pilares__stage")!;
+    const items = Array.from(sec.querySelectorAll<HTMLElement>(".pilar"));
+    const num = sec.querySelector<HTMLElement>(".pilares__count span")!;
+    const n = items.length;
+    let ticking = false;
+
+    function update() {
+      ticking = false;
+      const total = sec!.offsetHeight - st.offsetHeight;
+      const p = clamp(-sec!.getBoundingClientRect().top / total, 0, 1);
+      const t = p * n;
+      items.forEach((el, i) => {
+        const c = i + 0.5;
+        // el primero y el último se quedan quietos en los extremos del recorrido
+        const tt = i === 0 ? Math.max(t, c) : i === n - 1 ? Math.min(t, c) : t;
+        const d = Math.abs(tt - c);
+        const a = clamp(1 - (d - 0.28) / 0.22, 0, 1);
+        el.style.setProperty("--a", a.toFixed(3));
+        el.style.setProperty("--y", clamp((c - tt) * 70, -70, 70).toFixed(1));
+        el.classList.toggle("is-off", a < 0.02);
+      });
+      num.textContent = String(clamp(Math.floor(t), 0, n - 1) + 1).padStart(2, "0");
+    }
+
+    sec.classList.add("pilares--anim");
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    window.addEventListener("resize", update);
+    update();
+  }
+
+  // ----- Isotipo que acompaña al cursor (solo con mouse) -----
+  const iso = document.querySelector<HTMLElement>("[data-iso]");
+  const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+  if (iso && fine.matches) {
+    const follow = reduced ? 1 : 0.14;
+    let tx = 0;
+    let ty = 0;
+    let x = 0;
+    let y = 0;
+    let raf = 0;
+
+    function frame() {
+      const dx = (tx - x) * follow;
+      x += dx;
+      y += (ty - y) * follow;
+      iso!.style.setProperty("--ix", `${x.toFixed(1)}px`);
+      iso!.style.setProperty("--iy", `${y.toFixed(1)}px`);
+      // se inclina un poco hacia donde va
+      iso!.style.setProperty("--ir", `${reduced ? 0 : clamp(dx * 0.5, -14, 14).toFixed(1)}deg`);
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.5 ? requestAnimationFrame(frame) : 0;
+      if (!raf) iso!.style.setProperty("--ir", "0deg");
+    }
+
+    window.addEventListener("pointermove", (e) => {
+      if (e.pointerType !== "mouse") return;
+      tx = e.clientX;
+      ty = e.clientY;
+      // al entrar, nace bajo el cursor
+      if (!iso.classList.contains("is-on")) {
+        x = tx;
+        y = ty;
+        iso.classList.add("is-on");
+      }
+      if (!raf) raf = requestAnimationFrame(frame);
+    });
+    document.documentElement.addEventListener("pointerleave", () => iso.classList.remove("is-on"));
+  }
+</script>

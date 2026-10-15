@@ -1,0 +1,387 @@
+---
+import { Image } from "astro:assets";
+import Base from "../../layouts/Base.astro";
+import ProyectoCta from "../../components/ProyectoCta.astro";
+import { obras, ESTADOS } from "../../data/obras.js";
+
+const filtros = [
+  { key: "todas", label: "Todas" },
+  { key: "finalizada", label: "Finalizadas" },
+  { key: "en-construccion", label: "En construcción" },
+];
+// `noindex` en <Base>: los datos de las obras son provisorios; sacarlo cuando
+// estén los reales.
+---
+
+<Base
+  title="Obras - Belfast CM"
+  description="Una selección de obras terminadas y en construcción de Belfast Construction Management."
+  path="/obras"
+  noindex
+>
+  <main class="obras-page">
+    <header class="obras-page__head">
+      <h1 class="obras-page__title page-title" data-reveal>Nuestras obras</h1>
+      <p class="obras-page__kicker page-lead" data-reveal>(Una selección de obras terminadas y en construcción)</p>
+      <p class="obras-page__lead page-text" data-reveal>
+        Conocé los espacios, los detalles y el trabajo que hay detrás de cada proyecto.
+      </p>
+
+      <div class="obras-filter" role="group" aria-label="Filtrar obras por estado" data-reveal>
+        {
+          filtros.map((f) => (
+            <button type="button" class="obras-filter__btn" data-filter={f.key} aria-pressed={f.key === "todas" ? "true" : "false"}>
+              {f.label}
+            </button>
+          ))
+        }
+      </div>
+      <p class="sr-only" id="obras-count" aria-live="polite"></p>
+    </header>
+
+    <div class="obras-track" id="obras-track">
+    <div class="obras-track__stage">
+    <ul class="obras-grid" id="obras-grid">
+      {
+        obras.map((o, i) => (
+          <li class="obra-card" data-estado={o.estado} data-slot={i} data-reveal>
+            <a class="obra-card__media" href={`/obras/${o.slug}`} tabindex="-1" aria-hidden="true">
+              <Image
+                src={o.src}
+                alt=""
+                widths={[480, 506]}
+                sizes="(max-width: 899px) 90vw, 42vw"
+                format="webp"
+                quality={78}
+                loading={i < 2 ? "eager" : "lazy"}
+                decoding="async"
+              />
+            </a>
+            <div class="obra-card__meta">
+              <span class="obra-card__index">{`/0${i + 1}`}</span>
+              <h2 class="obra-card__name">{o.nombre}</h2>
+              <p class="obra-card__info">
+                {o.ubicacion} · {o.anio} · {ESTADOS[o.estado]}
+              </p>
+              <a class="link-arrow" href={`/obras/${o.slug}`}>
+                <span>Ver obra</span>
+                <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                  <path d="M3 11 11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                <span class="sr-only">: {o.nombre}</span>
+              </a>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+    </div>
+    </div>
+    <p class="obras-empty" id="obras-empty" hidden>No hay obras con este estado.</p>
+  </main>
+
+  <ProyectoCta />
+</Base>
+
+<style is:global>
+  .obras-page {
+    padding: clamp(7rem, 16vw, 11rem) var(--gutter) clamp(5rem, 10vw, 9rem);
+  }
+
+  /* ---------- Encabezado ---------- */
+  .obras-page__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(1rem, 2vw, 1.5rem);
+  }
+  /* separación entre los filtros y las fichas (en el recorrido horizontal la
+     calcula el script) */
+  .obras-track { margin-top: clamp(3.5rem, 8vw, 7rem); }
+
+  .obras-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    margin-top: clamp(0.5rem, 2vw, 1.5rem);
+  }
+  .obras-filter__btn {
+    padding: 0.3rem 0;
+    font: inherit;
+    font-size: var(--fs-small);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #8a8a8a;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .obras-filter__btn:hover { color: var(--ink); }
+  .obras-filter__btn[aria-pressed="true"] {
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .obras-filter__btn:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 4px; }
+
+  /* ---------- Grilla editorial ----------
+     Doce columnas con fotos de distinto tamaño y desfasadas, y un pie chico
+     con índice, nombre y datos. El script reparte los "slots" entre las obras
+     visibles, así la composición se mantiene al filtrar. */
+  .obras-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(1rem, 2vw, 2rem);
+    row-gap: clamp(3.5rem, 7vw, 7rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .obra-card[hidden] { display: none; }
+
+  .obra-card__media {
+    display: block;
+    overflow: hidden;
+    border-bottom: 0;
+    background: var(--ink);
+  }
+  .obra-card__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
+    transition: filter 0.4s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .obra-card:hover .obra-card__media img {
+      filter: grayscale(0) contrast(1.05);
+      transform: scale(1.04);
+    }
+  }
+
+  .obra-card__meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.25rem 1rem;
+    align-items: baseline;
+    margin-top: 1rem;
+  }
+  .obra-card__index {
+    font-size: var(--fs-small);
+    letter-spacing: 0.06em;
+    color: var(--grey-mid);
+  }
+  .obra-card__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-card);
+    line-height: 1.05;
+  }
+  .obra-card__info {
+    grid-column: 2;
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--grey-dark);
+  }
+  .obra-card__meta .link-arrow {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 0.5rem;
+  }
+
+  /* mobile: una columna, con las tarjetas apenas escalonadas */
+  .obra-card { grid-column: 1 / -1; width: 88%; }
+  .obra-card[data-slot="1"],
+  .obra-card[data-slot="3"],
+  .obra-card[data-slot="5"] { margin-left: auto; }
+  .obra-card__media { aspect-ratio: 4 / 5; }
+
+  @media (min-width: 900px) {
+    .obra-card { width: auto; margin-left: 0 !important; }
+    .obra-card[data-slot="0"] { grid-column: 1 / span 5; }
+    .obra-card[data-slot="1"] { grid-column: 8 / span 5; margin-top: clamp(4rem, 10vw, 10rem); }
+    .obra-card[data-slot="2"] { grid-column: 3 / span 4; }
+    .obra-card[data-slot="3"] { grid-column: 7 / span 6; margin-top: clamp(2rem, 6vw, 6rem); }
+    .obra-card[data-slot="4"] { grid-column: 1 / span 6; }
+    .obra-card[data-slot="5"] { grid-column: 9 / span 4; margin-top: clamp(3rem, 8vw, 8rem); }
+
+    .obra-card[data-slot="1"] .obra-card__media,
+    .obra-card[data-slot="3"] .obra-card__media { aspect-ratio: 4 / 3; }
+    .obra-card[data-slot="4"] .obra-card__media { aspect-ratio: 3 / 2; }
+  }
+
+  .obras-empty {
+    margin: 3rem 0 0;
+    font-size: 1.1rem;
+    color: var(--grey-dark);
+  }
+
+  /* ---------- Recorrido horizontal (JS) ----------
+     El mismo desfase de la grilla, pero en horizontal: la sección queda fija
+     y, mientras se scrollea hacia abajo, la tira de fichas se desliza hacia
+     la izquierda y las obras van entrando por la derecha. Cada ficha tiene su
+     alto, su proporción y su altura de arranque (--mh, --ar, --mt). Sin JS o
+     con reduced-motion se ve la grilla de arriba. */
+  .obras-track--on {
+    /* sube la tira para que las fichas queden a una distancia fija de los
+       filtros; la zona sobrante del escenario es transparente y no debe
+       tapar los botones */
+    margin-top: var(--lift, 0px);
+    pointer-events: none;
+    height: calc(100svh + var(--dist, 0px));
+    /* a sangre: la tira se recorta en el borde de la pantalla, no en el
+       margen de la página */
+    margin-inline: calc(var(--gutter) * -1);
+  }
+  .obras-track--on .obras-track__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    /* la tira queda centrada en la pantalla (descontando la barra del header) */
+    display: flex;
+    align-items: center;
+    padding-top: 4.2rem;
+    overflow: hidden;
+    overflow: clip;
+  }
+  .obras-track--on .obras-grid {
+    display: flex;
+    align-items: flex-start;
+    width: max-content;
+    gap: clamp(2rem, 6vw, 6rem);
+    padding-inline: var(--gutter);
+    row-gap: 0;
+    transform: translate3d(var(--x, 0px), 0, 0);
+    will-change: transform;
+  }
+  .obras-track--on .obra-card {
+    pointer-events: auto;
+    flex: none;
+    width: calc(var(--mh) * var(--ar)) !important;
+    margin: var(--mt, 0) 0 0 !important;
+    opacity: var(--o, 0);
+  }
+  .obras-track--on .obra-card__media {
+    width: 100%;
+    height: var(--mh);
+    aspect-ratio: auto !important;
+  }
+  .obras-track--on .obra-card[data-slot="0"] { --mh: min(52svh, 110vw); --ar: 0.8;    --mt: 0; }
+  .obras-track--on .obra-card[data-slot="1"] { --mh: min(40svh, 80vw);  --ar: 1.3333; --mt: 20svh; }
+  .obras-track--on .obra-card[data-slot="2"] { --mh: min(48svh, 105vw); --ar: 0.8;    --mt: 3svh; }
+  .obras-track--on .obra-card[data-slot="3"] { --mh: min(36svh, 70vw);  --ar: 1.5;    --mt: 22svh; }
+  .obras-track--on .obra-card[data-slot="4"] { --mh: min(44svh, 76vw);  --ar: 1.5;    --mt: 5svh; }
+  /* la 6 baja hasta el mismo borde inferior que la 2: es la que más desbalanceaba
+     la composición */
+  .obras-track--on .obra-card[data-slot="5"] {
+    --mh: min(50svh, 108vw);
+    --ar: 0.8;
+    --mt: max(0px, calc(20svh + min(40svh, 80vw) - min(50svh, 108vw)));
+  }
+</style>
+
+<script>
+  const grid = document.getElementById("obras-grid");
+  const empty = document.getElementById("obras-empty");
+  const count = document.getElementById("obras-count");
+  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>(".obras-filter__btn"));
+
+  if (grid && buttons.length) {
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>(".obra-card"));
+
+    function apply(filter: string) {
+      buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.filter === filter)));
+
+      let slot = 0;
+      cards.forEach((card) => {
+        const show = filter === "todas" || card.dataset.estado === filter;
+        card.hidden = !show;
+        if (show) card.dataset.slot = String(slot++);
+      });
+
+      if (empty) empty.hidden = slot > 0;
+      if (count) count.textContent = slot === 1 ? "Mostrando 1 obra" : `Mostrando ${slot} obras`;
+      document.dispatchEvent(new Event("obras:filtered"));
+    }
+
+    buttons.forEach((b) => b.addEventListener("click", () => apply(b.dataset.filter || "todas")));
+  }
+
+  // ---- recorrido horizontal atado al scroll ----
+  const track = document.getElementById("obras-track");
+  const stage = track?.querySelector<HTMLElement>(".obras-track__stage");
+  const rail = document.getElementById("obras-grid");
+
+  if (track && stage && rail && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const cards = Array.from(rail.querySelectorAll<HTMLElement>(".obra-card"));
+    const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+    let dist = 0;
+    let ticking = false;
+
+    // las fichas se manejan con su propia opacidad (--o), no con la aparición
+    // genérica de [data-reveal]
+    cards.forEach((c) => c.removeAttribute("data-reveal"));
+    cards.forEach((c) => c.querySelector("img")?.setAttribute("loading", "eager"));
+    track.classList.add("obras-track--on");
+
+    // una pantalla de scroll vertical por cada pantalla de recorrido horizontal
+    function measure() {
+      dist = Math.max(0, rail!.scrollWidth - stage!.clientWidth);
+      track!.style.setProperty("--dist", `${dist}px`);
+
+      // las fichas quedan centradas en el escenario, así que arriba sobra un
+      // espacio: se sube la tira para que queden a 3rem de los filtros
+      const gap = 3 * parseFloat(getComputedStyle(document.documentElement).fontSize);
+      const above = rail!.getBoundingClientRect().top - stage!.getBoundingClientRect().top;
+      track!.style.setProperty("--lift", `${-Math.max(0, above - gap)}px`);
+    }
+
+    function update() {
+      ticking = false;
+      const p = dist ? clamp(-track!.getBoundingClientRect().top / dist, 0, 1) : 0;
+      const x = -p * dist;
+      rail!.style.setProperty("--x", `${x}px`);
+
+      // cada ficha se aclara a medida que entra por el borde derecho
+      const w = stage!.clientWidth;
+      cards.forEach((card) => {
+        if (card.hidden) return;
+        const left = card.offsetLeft + x;
+        card.style.setProperty("--o", clamp((w * 0.96 - left) / (w * 0.28), 0, 1).toFixed(3));
+      });
+    }
+
+    function request() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }
+
+    function remeasure() {
+      measure();
+      update();
+    }
+
+    // con teclado se puede llegar a una ficha que todavía no entró: se
+    // scrollea hasta dejarla a la vista (1px vertical = 1px horizontal)
+    rail.addEventListener("focusin", (e) => {
+      const card = (e.target as HTMLElement).closest<HTMLElement>(".obra-card");
+      if (!card) return;
+      const gutter = parseFloat(getComputedStyle(rail).paddingLeft) || 0;
+      const start = track.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo(0, start + clamp(card.offsetLeft - gutter, 0, dist));
+    });
+
+    window.addEventListener("scroll", request, { passive: true });
+    window.addEventListener("resize", remeasure);
+    document.addEventListener("obras:filtered", () => {
+      window.scrollTo(0, Math.min(window.scrollY, track.getBoundingClientRect().top + window.scrollY));
+      requestAnimationFrame(remeasure);
+    });
+    remeasure();
+  }
+</script>

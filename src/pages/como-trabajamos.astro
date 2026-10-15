@@ -1,0 +1,316 @@
+---
+import Base from "../layouts/Base.astro";
+import ProyectoCta from "../components/ProyectoCta.astro";
+import { degular } from "../lib/degular";
+
+const pasos = [
+  {
+    titulo: "Conocemos tu proyecto",
+    texto:
+      "Conversamos sobre lo que querés construir, revisamos los planos y las primeras definiciones. Entendemos qué necesitás y cómo podemos trabajar juntos.",
+  },
+  {
+    titulo: "Organizamos la obra",
+    texto:
+      "Definimos el alcance de los trabajos, el presupuesto y el cronograma. Organizamos al equipo y coordinamos las decisiones necesarias para comenzar.",
+  },
+  {
+    titulo: "Construimos y hacemos seguimiento",
+    texto:
+      "Coordinamos los trabajos y supervisamos su ejecución. Compartimos los avances con vos y con el estudio de arquitectura para resolver las definiciones de cada etapa.",
+  },
+  {
+    titulo: "Revisamos y entregamos",
+    texto:
+      "Revisamos las terminaciones y el funcionamiento de las instalaciones junto al estudio de arquitectura. Coordinamos los ajustes finales y la entrega de la obra con vos.",
+  },
+];
+---
+
+<Base
+  title="Cómo trabajamos - Belfast CM"
+  description="Conocemos tu proyecto, organizamos la obra, construimos y hacemos seguimiento, revisamos y entregamos: así trabaja Belfast Construction Management."
+  path="/como-trabajamos"
+>
+  <main>
+    <!-- Resplandor amarillo de toda la página: una capa fija detrás del contenido
+         que sigue al mouse (ver el script); en táctil queda uno suave y quieto -->
+    <div class="como-glow" aria-hidden="true" data-glow>
+      <span class="como-glow__spot como-glow__spot--slow"></span>
+      <span class="como-glow__spot"></span>
+    </div>
+
+    <section class="como-hero">
+      <div class="como-hero__inner">
+        <!-- Degular con la tilde dibujada aparte (la demo no la trae); el
+             nombre accesible va en aria-label -->
+        <h1 class="como-title page-title caps" aria-label="Cómo trabajamos">
+          <span aria-hidden="true">
+            <span class="como-title__w" set:html={degular("Cómo")} />{" "}
+            <span class="como-title__w" set:html={degular("trabajamos")} />
+          </span>
+        </h1>
+        <p class="como-lead page-lead">
+          Nos involucramos desde el inicio para organizar la obra y acompañar las decisiones que hacen
+          posible el proyecto.
+        </p>
+      </div>
+    </section>
+
+    <!-- Bloque fijo: el listado queda pegado mientras se scrollea y los pasos
+         entran de a uno (ver scripts/stage-rows.js) -->
+    <section class="pasos-section" aria-label="Etapas de trabajo">
+      <div class="pasos-scene" data-pasos-scene>
+        <div class="pasos-stage">
+          <ol class="pasos" data-pasos>
+            {
+              pasos.map((p, i) => (
+                <li class="paso">
+                  <div class="paso__head">
+                    <span class="paso__num" aria-hidden="true">{`0${i + 1}`}</span>
+                    <h2 class="paso__title caps" aria-label={p.titulo}>
+                      <span aria-hidden="true" set:html={degular(p.titulo)} />
+                    </h2>
+                  </div>
+                  <p class="paso__text">{p.texto}</p>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <ProyectoCta line={false} />
+</Base>
+
+<style is:global>
+  /* ---------- Portada ---------- */
+  .como-hero {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 100svh;
+    /* el título arranca a la misma altura que en Qué hacemos y Nuestras obras */
+    padding: clamp(7rem, 16vw, 11rem) var(--gutter) clamp(3rem, 8vw, 6rem);
+    text-align: center;
+  }
+
+  /* Resplandor: dos manchas con los amarillos de la paleta, en una capa fija
+     que cubre toda la página. Siguen al mouse con distinto retraso (--gx / --gy,
+     ver el script) y se apagan al salir de la ventana. Detrás del texto, que
+     sigue en negro. */
+  .como-glow {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.7s ease;
+  }
+  /* más transparente: el resplandor acompaña, no compite con el texto */
+  .como-glow.is-on { opacity: 0.55; }
+  .como-glow__spot {
+    --s: clamp(26rem, 34vw, 40rem);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--s);
+    height: var(--s);
+    margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+    background: radial-gradient(
+      closest-side,
+      rgba(232, 211, 0, 0.5),
+      rgba(232, 211, 0, 0.26) 42%,
+      rgba(213, 185, 0, 0.08) 72%,
+      transparent
+    );
+    transform: translate3d(var(--gx, 50vw), var(--gy, 50vh), 0);
+    will-change: transform;
+  }
+  .como-glow__spot--slow {
+    --s: clamp(40rem, 58vw, 70rem);
+    background: radial-gradient(
+      closest-side,
+      rgba(232, 211, 0, 0.22),
+      rgba(213, 185, 0, 0.09) 55%,
+      transparent
+    );
+    transform: translate3d(var(--sx, 50vw), var(--sy, 50vh), 0);
+  }
+  /* sin mouse (celular, tablet): un resplandor suave y quieto abajo a la
+     derecha, sin seguimiento */
+  @media (hover: none), (pointer: coarse) {
+    .como-glow { opacity: 0.55; }
+    .como-glow__spot { --gx: 78vw; --gy: 70vh; }
+    .como-glow__spot--slow { --sx: 70vw; --sy: 78vh; }
+  }
+
+  .como-hero__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(1.25rem, 2.6vw, 2.25rem);
+    width: 100%;
+  }
+  .como-title {
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  /* la bajada va abajo, dentro del alto de la pantalla */
+  .como-lead {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: clamp(2.5rem, 7vw, 5rem);
+    margin: 0 auto;
+    max-width: 24em;
+  }
+  /* en celular el título va en dos renglones, uno por palabra, sin pasarse
+     del tamaño del título de Qué hacemos */
+  @media (max-width: 699px) {
+    .como-title__w { display: block; }
+  }
+
+  /* ---------- Pasos ----------
+     Base (sin JS): los cuatro pasos, uno debajo del otro. Cada renglón lleva
+     el título a la izquierda y su texto a la derecha, con la línea hasta el
+     margen derecho, igual que Qué hacemos. */
+  .pasos-section { padding: clamp(4rem, 8vw, 7rem) var(--gutter) clamp(3rem, 6vw, 5rem); }
+  .pasos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .paso {
+    display: grid;
+    grid-template-columns: 52% 1fr;
+    align-items: start;
+    border-top: 1px solid var(--grey-line);
+    padding: clamp(1.5rem, 3vw, 2.6rem) 0;
+  }
+  .paso__head {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    align-items: baseline;
+    gap: 1rem;
+    padding-right: 2rem;
+  }
+  .paso__num {
+    font-size: var(--fs-small);
+    letter-spacing: 0.06em;
+    color: var(--grey-mid);
+  }
+  .paso__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-item);
+    line-height: 1.08;
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .paso__text {
+    margin: 0;
+    max-width: 40ch;
+    /* mismo aire de arriba que el título, así el texto arranca a su altura */
+    padding-top: 0.35em;
+    font-size: var(--fs-row);
+    line-height: 1.6;
+    color: var(--grey-dark);
+  }
+  @media (max-width: 899px) {
+    .paso { grid-template-columns: 1fr; gap: 1rem; }
+    .paso__head { padding-right: 0; }
+    .paso__text { padding: 0 0 0 calc(2.5rem + 1rem); }
+  }
+
+  /* ---------- Bloque fijo con aparición atada al scroll (JS) ----------
+     Igual que Qué hacemos: la sección es alta, el listado queda pegado y cada
+     paso entra en orden (--p de 0 a 1 en cada fila). Sin JS, con poco alto de
+     pantalla (celular) o con reduced-motion queda en flujo normal. */
+  .pasos-scene--anim { height: calc(100svh + 60svh); }
+  .pasos-scene--anim .pasos-stage {
+    position: sticky;
+    top: var(--scene-top);
+  }
+  .pasos-scene--rise .paso {
+    opacity: var(--p, 0);
+    transform: translateY(calc((1 - var(--p, 0)) * 36px));
+    will-change: transform, opacity;
+  }
+  .pasos-scene--rise .paso.is-wait { visibility: hidden; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .como-glow { transition: none; }
+  }
+</style>
+
+<script>
+  import { stageRows } from "../scripts/stage-rows.js";
+
+  // ----- pasos: bloque fijo con aparición por scroll -----
+  const scene = document.querySelector<HTMLElement>("[data-pasos-scene]");
+  const stage = scene?.querySelector<HTMLElement>(".pasos-stage");
+  const list = document.querySelector<HTMLElement>("[data-pasos]");
+  if (scene && stage && list) {
+    stageRows({
+      scene,
+      stage,
+      list,
+      items: Array.from(list.querySelectorAll<HTMLElement>(".paso")),
+      prefix: "pasos-scene",
+    });
+  }
+
+  // ----- resplandor: dos manchas siguen al mouse, una más lenta que la otra -----
+  const glow = document.querySelector<HTMLElement>("[data-glow]");
+  const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+  const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  if (glow && fine.matches) {
+    // con reduced-motion el resplandor aparece pero sin retraso ni deslizamiento
+    const fast = calm.matches ? 1 : 0.16;
+    const slow = calm.matches ? 1 : 0.06;
+    let tx = 0;
+    let ty = 0;
+    let ax = 0;
+    let ay = 0;
+    let bx = 0;
+    let by = 0;
+    let raf = 0;
+
+    function frame() {
+      ax += (tx - ax) * fast;
+      ay += (ty - ay) * fast;
+      bx += (tx - bx) * slow;
+      by += (ty - by) * slow;
+      glow!.style.setProperty("--gx", `${ax.toFixed(1)}px`);
+      glow!.style.setProperty("--gy", `${ay.toFixed(1)}px`);
+      glow!.style.setProperty("--sx", `${bx.toFixed(1)}px`);
+      glow!.style.setProperty("--sy", `${by.toFixed(1)}px`);
+      const resto = Math.abs(tx - ax) + Math.abs(ty - ay) + Math.abs(tx - bx) + Math.abs(ty - by);
+      raf = resto > 1 ? requestAnimationFrame(frame) : 0;
+    }
+
+    // la capa es fija: las coordenadas son las de la ventana, en cualquier punto
+    // del scroll
+    window.addEventListener("pointermove", (e) => {
+      if (e.pointerType !== "mouse") return;
+      tx = e.clientX;
+      ty = e.clientY;
+      // al entrar, las manchas nacen bajo el cursor (no vienen desde la esquina)
+      if (!glow.classList.contains("is-on")) {
+        ax = bx = tx;
+        ay = by = ty;
+        glow.classList.add("is-on");
+      }
+      if (!raf) raf = requestAnimationFrame(frame);
+    });
+    document.documentElement.addEventListener("pointerleave", () => glow.classList.remove("is-on"));
+  }
+</script>

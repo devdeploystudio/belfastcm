@@ -45,8 +45,12 @@ const ogImage = `${SITE}/logo-og.png`;
   </head>
   <body>
     <Loader />
-    <Header />
+    <Header current={path} />
     <slot />
+    <script>
+      import "../scripts/reveal.js";
+      import "../scripts/type-links.js";
+    </script>
     <footer class="site-footer">
       <p>Copyright © 2026 Belfast Construction Management - All Rights Reserved</p>
       <p>Sitio realizado por <a href="https://deploystudio.com.ar/" target="_blank" rel="noopener noreferrer">/deploy_</a></p>

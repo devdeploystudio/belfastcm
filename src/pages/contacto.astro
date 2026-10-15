@@ -1,0 +1,529 @@
+---
+import { Image } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import { fotos } from "../data/obras.js";
+
+// Dónde se envía el formulario: URL de un servicio que reciba un POST con JSON
+// (nombre, email, telefono, ubicacion, mensaje) y lo mande a info@belfastcm.com.
+// Se define con la variable PUBLIC_CONTACT_ENDPOINT (ver .env.example). Mientras
+// no esté definida, el formulario valida pero avisa que no puede enviar y deja
+// WhatsApp y el mail como alternativa.
+const endpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
+
+const whatsapp = "https://wa.me/5491130498308";
+const telefono = "+54 9 11 3049-8308";
+const correo = "info@belfastcm.com";
+
+// PROVISORIO: foto cualquiera hasta tener la definitiva
+const foto = fotos[2];
+---
+
+<Base
+  title="Contacto - Belfast CM"
+  description="Contanos dónde sería la obra, si ya tenés planos y qué necesitás de nuestro equipo. Escribinos por WhatsApp o completá el formulario."
+  path="/contacto"
+>
+  <main class="contacto">
+    <!-- Primera pantalla: el título con su bajada -->
+    <section class="ct-hero">
+    <header class="ct-head">
+      <h1 class="ct-title page-title" data-reveal>Contanos tu proyecto</h1>
+      <!-- flecha de la referencia: decorativa -->
+      <svg class="ct-arrow" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+        <path d="M14 14 86 86M86 24V86H24" fill="none" stroke="currentColor" stroke-width="9" />
+      </svg>
+    </header>
+
+    <div class="ct-hero__text">
+      <p class="ct-lead page-lead" data-reveal>Si estás pensando en construir, conversemos.</p>
+      <p class="ct-intro page-text" data-reveal>
+        Contanos dónde sería la obra, si ya tenés planos y qué necesitás de nuestro equipo.
+      </p>
+    </div>
+    </section>
+
+    <!-- Segunda pantalla, fija: la foto, el formulario y los datos de contacto -->
+    <section class="ct-scene" aria-label="Formulario de contacto">
+    <div class="ct-stage">
+    <div class="ct-content">
+    <div class="ct-main">
+      <figure class="ct-photo">
+        <Image
+          src={foto.src}
+          alt=""
+          widths={[640, 506]}
+          sizes="(max-width: 899px) 90vw, 32vw"
+          format="webp"
+          quality={80}
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+
+      <div class="ct-panel">
+        <form class="ct-form" data-contact data-endpoint={endpoint} novalidate>
+          <div class="ct-pair">
+          <div class="ct-field">
+            <label for="ct-nombre">Nombre y apellido</label>
+            <input id="ct-nombre" name="nombre" type="text" autocomplete="name" required aria-describedby="ct-nombre-error" />
+            <p class="ct-error" id="ct-nombre-error" hidden></p>
+          </div>
+
+          <div class="ct-field">
+            <label for="ct-email">Correo electrónico</label>
+            <input
+              id="ct-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              inputmode="email"
+              required
+              aria-describedby="ct-email-error"
+            />
+            <p class="ct-error" id="ct-email-error" hidden></p>
+          </div>
+          </div>
+
+          <div class="ct-pair">
+            <div class="ct-field">
+              <label for="ct-telefono">Teléfono</label>
+              <input id="ct-telefono" name="telefono" type="tel" autocomplete="tel" inputmode="tel" />
+            </div>
+            <div class="ct-field">
+              <label for="ct-ubicacion">Ubicación de la obra</label>
+              <input id="ct-ubicacion" name="ubicacion" type="text" autocomplete="off" />
+            </div>
+          </div>
+
+          <div class="ct-field">
+            <label for="ct-mensaje">Contanos sobre tu proyecto</label>
+            <textarea id="ct-mensaje" name="mensaje" rows="4" required aria-describedby="ct-mensaje-error"></textarea>
+            <p class="ct-error" id="ct-mensaje-error" hidden></p>
+          </div>
+
+          <!-- trampa para bots: las personas no lo ven ni lo completan -->
+          <div class="ct-trap" aria-hidden="true">
+            <label for="ct-web">No completar este campo</label>
+            <input id="ct-web" name="website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <p class="ct-alert" role="alert" hidden></p>
+
+          <button class="ct-submit" type="submit">
+            <span class="ct-submit__label">Enviar consulta</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M3 11 11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3" />
+            </svg>
+          </button>
+        </form>
+
+        <div class="ct-sent" role="status" tabindex="-1" hidden>
+          <h2 class="ct-sent__title page-lead">Recibimos tu consulta</h2>
+          <p class="page-text">Nos vamos a poner en contacto con vos para conversar sobre el proyecto.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Otras formas de contacto: renglones como en la referencia, con la línea
+         hasta el margen derecho -->
+    <section class="ct-info" aria-label="Otras formas de contacto">
+      <div class="ct-info__row">
+        <p class="ct-info__label">Escribinos por WhatsApp</p>
+        <a class="ct-info__value" href={whatsapp} target="_blank" rel="noopener noreferrer">
+          <span>{telefono}</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M3 11 11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3" />
+          </svg>
+        </a>
+      </div>
+      <div class="ct-info__row">
+        <p class="ct-info__label">Correo electrónico</p>
+        <a class="ct-info__value" href={`mailto:${correo}`}>
+          <span>{correo}</span>
+        </a>
+      </div>
+    </section>
+    </div>
+    </div>
+    </section>
+  </main>
+</Base>
+
+<style is:global>
+  .contacto { padding: 0 var(--gutter); }
+
+  /* ---------- Primera pantalla: título y bajada ---------- */
+  .ct-hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    min-height: 100svh;
+    padding: clamp(7rem, 16vw, 11rem) 0 clamp(3rem, 8vw, 6rem);
+  }
+  .ct-head { position: relative; }
+  .ct-title { max-width: 9em; text-wrap: balance; }
+  /* flecha grande arriba a la derecha, de la altura del título */
+  .ct-arrow {
+    position: absolute;
+    top: 0.1em;
+    right: 0;
+    width: clamp(3rem, 9vw, 9rem);
+    height: auto;
+    color: var(--ink);
+    font-size: var(--fs-title);
+  }
+  @media (max-width: 699px) { .ct-arrow { display: none; } }
+  .ct-hero__text { display: flex; flex-direction: column; gap: clamp(1rem, 2vw, 1.5rem); }
+  .ct-lead { max-width: 22em; }
+
+  /* ---------- Segunda pantalla: foto + formulario ---------- */
+  .ct-scene { padding-bottom: clamp(4rem, 8vw, 7rem); }
+  .ct-main {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 4rem);
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+  /* la foto va en gris y se ve en color al pasar el mouse (como en todo el
+     sitio); PROVISORIA */
+  .ct-photo { margin: 0; overflow: hidden; background: var(--ink); }
+  .ct-photo img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
+    transition: filter 0.4s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .ct-photo:hover img {
+      filter: grayscale(0) contrast(1.05);
+      transform: scale(1.04);
+    }
+  }
+  /* en celular la foto va más baja para que el formulario aparezca antes */
+  @media (max-width: 899px) { .ct-photo img { aspect-ratio: 16 / 10; } }
+  @media (min-width: 900px) {
+    .ct-main { grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: start; }
+    .ct-photo { grid-column: 1 / span 5; }
+    .ct-panel { grid-column: 7 / span 6; }
+  }
+
+  /* En escritorio la segunda pantalla es un bloque fijo del alto de la
+     pantalla (queda pegado un tramo, como los demás), pero el contenido no lo
+     llena: va centrado y compacto — la foto y el formulario con la misma altura
+     contenida y los datos de contacto abajo, en renglones chicos como en la
+     referencia. En celular y en pantallas bajas todo va en columna y la página
+     scrollea. */
+  @media (min-width: 1000px) and (min-height: 680px) {
+    .contacto .ct-scene { height: calc(100svh + 60svh); padding-bottom: 0; }
+    .contacto .ct-stage {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5rem 0 2rem;
+    }
+    .contacto .ct-main {
+      align-items: center;
+      gap: 0 clamp(2rem, 4vw, 4rem);
+      margin-bottom: clamp(1.5rem, 4vh, 3rem);
+    }
+    .contacto .ct-photo { height: min(46svh, 25rem); }
+    .contacto .ct-photo img { height: 100%; aspect-ratio: auto; }
+    .contacto .ct-form { gap: clamp(0.9rem, 2.2vh, 1.6rem); }
+    .contacto .ct-info__row { padding: clamp(0.7rem, 1.5vh, 1rem) 0; }
+  }
+
+  /* ---------- Animación de scroll ----------
+     La foto se descubre de arriba hacia abajo y el formulario y los datos de
+     contacto entran en orden, atados al scroll (--p de 0 a 1 en cada pieza, ver
+     el script). Sin JS o con reduced-motion se ve todo de entrada. */
+  .ct-scene--rise .ct-photo {
+    clip-path: inset(0 0 calc((1 - var(--p, 0)) * 100%) 0);
+    will-change: clip-path;
+  }
+  .ct-scene--rise .ct-photo img {
+    transform: scale(calc(1.15 - var(--p, 0) * 0.15));
+    transition: filter 0.4s ease; /* el zoom lo maneja el scroll */
+  }
+  .ct-scene--rise .ct-panel,
+  .ct-scene--rise .ct-info {
+    opacity: var(--p, 0);
+    transform: translateY(calc((1 - var(--p, 0)) * 36px));
+    will-change: transform, opacity;
+  }
+  .ct-scene--rise .ct-main > .is-wait,
+  .ct-scene--rise .ct-content > .is-wait { visibility: hidden; }
+
+  /* Campos: línea de abajo, la etiqueta arriba en chico */
+  .ct-form { display: flex; flex-direction: column; gap: clamp(1.5rem, 3vw, 2.25rem); }
+  .ct-pair { display: grid; gap: inherit; }
+  @media (min-width: 700px) { .ct-pair { grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 3vw, 2.5rem); } }
+  .ct-field { display: flex; flex-direction: column; gap: 0.4rem; }
+  .ct-field label {
+    font-size: var(--fs-small);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--grey-mid);
+  }
+  .ct-field input,
+  .ct-field textarea {
+    width: 100%;
+    padding: 0.6rem 0 0.7rem;
+    font: inherit;
+    font-size: var(--fs-body);
+    color: var(--ink);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--ink);
+    border-radius: 0;
+    resize: vertical;
+    transition: box-shadow 0.2s ease;
+  }
+  .ct-field input:focus,
+  .ct-field textarea:focus { outline: none; box-shadow: 0 1px 0 0 var(--ink); }
+  .ct-field input:focus-visible,
+  .ct-field textarea:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 4px; }
+  /* error: línea más gruesa y mensaje (no solo color) */
+  .ct-field [aria-invalid="true"] { box-shadow: 0 2px 0 0 var(--ink); border-bottom-color: var(--ink); }
+  .ct-error {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .ct-error::before { content: "↳ "; }
+  .ct-error[hidden],
+  .ct-alert[hidden],
+  .ct-sent[hidden],
+  .ct-form[hidden] { display: none; }
+  .ct-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .ct-alert {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    max-width: 46ch;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border: 1px solid var(--ink);
+  }
+
+  /* botón con el mismo estilo que los enlaces con flecha */
+  .ct-submit {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0 0 0.3rem;
+    font: inherit;
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--ink);
+    cursor: pointer;
+  }
+  /* área táctil de al menos 44px en pantallas táctiles */
+  @media (pointer: coarse) { .ct-submit { padding-block: 0.8rem 0.9rem; } }
+  .ct-submit svg { transition: transform 0.25s ease; }
+  .ct-submit:hover svg,
+  .ct-submit:focus-visible svg { transform: translate(2px, -2px); }
+  .ct-submit:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 4px; }
+  .ct-submit[disabled] { cursor: progress; opacity: 0.6; }
+
+  .ct-sent { display: flex; flex-direction: column; gap: 1rem; outline: none; }
+  .ct-sent__title { margin: 0; color: var(--ink); }
+
+  /* ---------- Otras formas de contacto ---------- */
+  .ct-info { border-bottom: 1px solid var(--grey-line); }
+  .ct-info__row {
+    display: grid;
+    grid-template-columns: 52% 1fr;
+    align-items: baseline;
+    gap: 0.5rem 2rem;
+    padding: clamp(0.9rem, 1.6vw, 1.2rem) 0;
+    border-top: 1px solid var(--grey-line);
+  }
+  .ct-info__label {
+    margin: 0;
+    font-size: var(--fs-small);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--grey-mid);
+  }
+  .ct-info__value {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: fit-content;
+    font-size: var(--fs-body);
+    line-height: 1.1;
+    letter-spacing: -0.005em;
+    word-break: break-word;
+  }
+  .ct-info__value svg { flex: none; transition: transform 0.25s ease; }
+  .ct-info__value:hover svg,
+  .ct-info__value:focus-visible svg { transform: translate(2px, -2px); }
+  @media (max-width: 699px) {
+    .ct-info__row { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ct-photo img,
+    .ct-field input,
+    .ct-field textarea { transition: none; }
+  }
+</style>
+
+<script>
+  import { stageRows } from "../scripts/stage-rows.js";
+
+  // ----- animación de scroll de la segunda pantalla -----
+  const scene = document.querySelector<HTMLElement>(".ct-scene");
+  const stage = scene?.querySelector<HTMLElement>(".ct-stage");
+  const content = scene?.querySelector<HTMLElement>(".ct-content");
+  if (scene && stage && content) {
+    stageRows({
+      scene,
+      stage,
+      list: content,
+      items: [
+        scene.querySelector<HTMLElement>(".ct-photo")!,
+        scene.querySelector<HTMLElement>(".ct-panel")!,
+        scene.querySelector<HTMLElement>(".ct-info")!,
+      ],
+      prefix: "ct-scene",
+      // el contenido va centrado en la pantalla: entra mientras queda fijo, una
+      // pieza después de la otra
+      start: 0.1,
+      stickyTop: 0,
+      step: 0.28,
+      span: 0.3,
+    });
+  }
+
+  const form = document.querySelector<HTMLFormElement>("[data-contact]");
+  const sent = document.querySelector<HTMLElement>(".ct-sent");
+
+  if (form && sent) {
+    const alertBox = form.querySelector<HTMLElement>(".ct-alert")!;
+    const submit = form.querySelector<HTMLButtonElement>(".ct-submit")!;
+    const label = submit.querySelector<HTMLElement>(".ct-submit__label")!;
+    const labelText = label.textContent ?? "";
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const campo = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement;
+    const errorDe = (el: HTMLElement) => document.getElementById(`${el.id}-error`);
+
+    function setError(el: HTMLInputElement | HTMLTextAreaElement, mensaje: string) {
+      const box = errorDe(el);
+      el.setAttribute("aria-invalid", "true");
+      if (box) {
+        box.textContent = mensaje;
+        box.hidden = false;
+      }
+    }
+    function clearError(el: HTMLInputElement | HTMLTextAreaElement) {
+      el.removeAttribute("aria-invalid");
+      const box = errorDe(el);
+      if (box) box.hidden = true;
+    }
+
+    // al corregir un campo se le saca el error
+    ["nombre", "email", "mensaje"].forEach((n) => campo(n).addEventListener("input", () => clearError(campo(n))));
+
+    function validar() {
+      const nombre = campo("nombre");
+      const email = campo("email");
+      const mensaje = campo("mensaje");
+      const invalidos: (HTMLInputElement | HTMLTextAreaElement)[] = [];
+
+      if (!nombre.value.trim()) {
+        setError(nombre, "Ingresá tu nombre y apellido.");
+        invalidos.push(nombre);
+      }
+      if (!email.value.trim()) {
+        setError(email, "Ingresá tu correo electrónico.");
+        invalidos.push(email);
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())) {
+        setError(email, "El correo ingresado no es válido.");
+        invalidos.push(email);
+      }
+      if (!mensaje.value.trim()) {
+        setError(mensaje, "Contanos un poco sobre tu proyecto.");
+        invalidos.push(mensaje);
+      }
+      return invalidos;
+    }
+
+    function setLoading(on: boolean) {
+      submit.disabled = on;
+      form!.setAttribute("aria-busy", String(on));
+      label.textContent = on ? "Enviando…" : labelText;
+    }
+
+    function showSent() {
+      form!.hidden = true;
+      sent!.hidden = false;
+      sent!.focus({ preventScroll: true });
+      sent!.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+    }
+
+    function showError() {
+      alertBox.textContent =
+        "No pudimos enviar tu consulta. Probá de nuevo en unos minutos, o escribinos por WhatsApp o a info@belfastcm.com.";
+      alertBox.hidden = false;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      alertBox.hidden = true;
+
+      const invalidos = validar();
+      if (invalidos.length) {
+        invalidos[0].focus();
+        return;
+      }
+
+      // un bot completó la trampa: se muestra el mensaje de recibido y no se envía
+      if (campo("website").value) {
+        showSent();
+        return;
+      }
+
+      const datos = {
+        nombre: campo("nombre").value.trim(),
+        email: campo("email").value.trim(),
+        telefono: campo("telefono").value.trim(),
+        ubicacion: campo("ubicacion").value.trim(),
+        mensaje: campo("mensaje").value.trim(),
+      };
+
+      setLoading(true);
+      try {
+        const endpoint = form!.dataset.endpoint ?? "";
+        if (!endpoint) throw new Error("Falta PUBLIC_CONTACT_ENDPOINT");
+        const control = new AbortController();
+        const corte = window.setTimeout(() => control.abort(), 15000);
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datos),
+          signal: control.signal,
+        });
+        window.clearTimeout(corte);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        showSent();
+      } catch (err) {
+        console.error("[contacto]", err);
+        showError();
+      } finally {
+        setLoading(false);
+      }
+    });
+  }
+</script>

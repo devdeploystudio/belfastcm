@@ -17,6 +17,8 @@ if (logo) {
   const dark = logo.querySelector(".site-logo__dark");
   const hero = document.querySelector("[data-hero]");
   const sheet = document.querySelector(".page-body");
+  const bar = document.querySelector(".site-header");
+  const root = document.documentElement;
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // ancho del logo sobre la foto: 60% de la pantalla (tope 820px) y 80% en mobile
@@ -61,6 +63,9 @@ if (logo) {
 
     // borde superior de la hoja blanca; sin hoja, todo el logo está sobre blanco
     const edge = hero && sheet ? sheet.getBoundingClientRect().top : -Infinity;
+
+    // la navegación va en blanco mientras la barra del header sigue sobre la foto
+    if (bar) root.classList.toggle("nav-over-photo", edge > bar.offsetHeight / 2);
     const r = logo.getBoundingClientRect();
     const h = logo.offsetHeight;
     const local = clamp(((edge - r.top) / r.height) * h, 0, h);

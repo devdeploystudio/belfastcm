@@ -1,25 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import cocina from "../assets/obras/obra-01-cocina.jpg";
-import luzSombra from "../assets/obras/obra-02-luz-sombra.jpg";
-import living from "../assets/obras/obra-03-living.jpg";
-import jardin from "../assets/obras/obra-04-jardin.jpg";
-import bano from "../assets/obras/obra-05-bano.jpg";
-import losa from "../assets/obras/obra-06-losa-obra.jpg";
-import pozo from "../assets/obras/obra-07-pozo-hormigon.jpg";
-import estructura from "../assets/obras/obra-08-estructura-hormigon.jpg";
-
-// orden definido por la clienta (empieza por la cocina)
-const photos = [
-  { src: cocina, alt: "Cocina con muebles de madera y alacenas con vidrio" },
-  { src: luzSombra, alt: "Luz y sombra de una planta sobre una pared interior" },
-  { src: living, alt: "Living comedor con mesa, sillas y cortinas" },
-  { src: jardin, alt: "Jardín interior con plantas junto a un ventanal" },
-  { src: bano, alt: "Baño con mesada de mármol oscuro y cortinas de lino" },
-  { src: losa, alt: "Operarios colando hormigón sobre una losa" },
-  { src: pozo, alt: "Botas de obra sobre hormigón fresco" },
-  { src: estructura, alt: "Estructura de hormigón en un ambiente de obra" },
-];
+import { fotos as photos } from "../data/obras.js";
 
 const slogan = "We portray what we aspire to see.";
 const sloganLines = ["We portray", "what we", "aspire to", "see."];
@@ -64,7 +45,7 @@ const lines = sloganLines.map((line) =>
       }
     </ul>
 
-    <a class="seq__link" href="/obras">
+    <a class="link-arrow seq__link" href="/obras">
       <span>Explorá nuestras obras</span>
       <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
         <path d="M3 11 11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3" />
@@ -145,19 +126,7 @@ const lines = sloganLines.map((line) =>
     }
   }
 
-  .seq__link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    align-self: flex-start;
-    padding-bottom: 0.3rem;
-    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
-    letter-spacing: 0.02em;
-    border-bottom: 1px solid var(--ink);
-  }
-  .seq__link svg { transition: transform 0.25s ease; }
-  .seq__link:hover svg,
-  .seq__link:focus-visible svg { transform: translate(2px, -2px); }
+  .seq__link { align-self: flex-start; }
 
   /* ---------- Secuencia pegajosa (JS) ---------- */
 

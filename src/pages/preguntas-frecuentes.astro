@@ -1,0 +1,461 @@
+---
+import Base from "../layouts/Base.astro";
+import ProyectoCta from "../components/ProyectoCta.astro";
+import { degular } from "../lib/degular";
+
+// Dirección para el enlace a Google Maps (se abre una búsqueda por dirección).
+// Cuando se tenga el enlace exacto de la ficha de Google, reemplazar `mapa`.
+const direccion = "Del Portal Local 10, B1617 Rincón de Milberg, Provincia de Buenos Aires, Argentina";
+const mapa = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`;
+
+const faqs = [
+  {
+    q: "¿Cómo puedo consultar por una obra?",
+    a: "Escribinos por WhatsApp o completá el formulario. Contanos qué querés construir, dónde y si ya tenés un proyecto. Coordinamos una charla para conocerlo.",
+  },
+  {
+    q: "¿Puedo trabajar con Belfast si ya tengo un arquitecto?",
+    a: "Sí. Podemos trabajar junto a tu arquitecto o estudio y ocuparnos de la construcción. Revisamos el proyecto y definimos juntos cómo vamos a participar.",
+  },
+  {
+    q: "¿Cómo se arma el presupuesto?",
+    a: "Revisamos los planos, los materiales y los trabajos previstos. Con esa información, elaboramos un presupuesto para tu obra.",
+  },
+  {
+    q: "¿Cuánto tiempo lleva construir?",
+    a: "Depende de la superficie, el diseño y las características de la obra. Definimos las etapas y los plazos durante la planificación.",
+  },
+  {
+    q: "¿Dónde nos encontramos?",
+    a: "Nuestra oficina está en Del Portal, Local 10, Rincón de Milberg, Provincia de Buenos Aires. Podés escribirnos por WhatsApp o mail para coordinar una reunión.",
+    mapa: true,
+  },
+];
+---
+
+<Base
+  title="Preguntas frecuentes - Belfast CM"
+  description="Cómo consultar por una obra, si podés trabajar con Belfast teniendo arquitecto, cómo se arma el presupuesto, cuánto lleva construir y dónde encontrarnos."
+  path="/preguntas-frecuentes"
+>
+  <main class="faq">
+    <!-- Escenario fijo: el título queda a la izquierda y, entre paréntesis, va
+         apareciendo una pregunta por vez mientras se scrollea (o se elige con los
+         números). Al hacer clic en la pregunta se abre abajo, con su respuesta. -->
+    <section class="faq-scene" data-faq style={`--n:${faqs.length}`} aria-label="Preguntas frecuentes">
+      <div class="faq-stage">
+        <h1 class="faq-title caps" aria-label="Preguntas frecuentes">
+          <span aria-hidden="true">
+            <span class="faq-title__w" set:html={degular("Preguntas")} />{" "}
+            <span class="faq-title__w" set:html={degular("frecuentes")} />
+          </span>
+        </h1>
+
+        <div class="faq-qa">
+          <div class="faq-row">
+            <span class="faq-paren" aria-hidden="true">(</span>
+            <div class="faq-questions">
+              {
+                faqs.map((f, i) => (
+                  <h2 class={`faq-q${i === 0 ? " is-active" : ""}`} data-i={i}>
+                    <button type="button" class="faq-q__btn" aria-controls="faq-answer" aria-label={`${f.q} Ver la respuesta`}>
+                      <span aria-hidden="true" set:html={degular(f.q)} />
+                    </button>
+                  </h2>
+                ))
+              }
+            </div>
+            <span class="faq-paren" aria-hidden="true">)</span>
+          </div>
+
+          <!-- el aviso y los números van fuera del flujo: así la pregunta y los
+               paréntesis quedan centrados con el título -->
+          <div class="faq-extra">
+          <p class="faq-hint" aria-hidden="true">Hacé clic en la pregunta para ver la respuesta</p>
+
+          <div class="faq-nav" role="group" aria-label="Elegir pregunta" hidden>
+            {
+              faqs.map((f, i) => (
+                <button
+                  type="button"
+                  class={`faq-nav__btn${i === 0 ? " is-active" : ""}`}
+                  data-i={i}
+                  aria-label={`Pregunta ${i + 1}: ${f.q}`}
+                  aria-current={i === 0 ? "true" : undefined}
+                >
+                  {`0${i + 1}`}
+                </button>
+              ))
+            }
+          </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Respuesta: con JS se ve solo la pregunta elegida; sin JS quedan todas
+         redactadas (así no se pierde el contenido). -->
+    <section class="faq-answer" id="faq-answer" aria-live="polite" tabindex="-1" aria-label="Respuesta">
+      <div class="faq-answer__stage">
+      <ol class="faq-answer__list">
+        {
+          faqs.map((f, i) => (
+            <li class="faq-answer__item" data-i={i}>
+              <h2 class="faq-answer__q" aria-label={f.q}>
+                <span aria-hidden="true" set:html={degular(f.q)} />
+              </h2>
+              <div class="faq-answer__a">
+                <p>{f.a}</p>
+                {f.mapa && (
+                  <a class="link-arrow" href={mapa} target="_blank" rel="noopener noreferrer">
+                    <span>Ver en Google Maps</span>
+                    <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                      <path d="M3 11 11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3" />
+                    </svg>
+                  </a>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+      <button type="button" class="faq-answer__back" hidden>
+        <span>Elegir otra pregunta</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+          <path d="M7 12V2M3 6l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.3" />
+        </svg>
+      </button>
+      </div>
+    </section>
+  </main>
+
+  <ProyectoCta line={false} />
+</Base>
+
+<style is:global>
+  .faq { padding: clamp(7rem, 16vw, 11rem) var(--gutter) 0; }
+
+  /* ---------- Escenario ----------
+     Base (sin JS): el título y la primera pregunta; las respuestas, más abajo. */
+  .faq-stage {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    padding-bottom: clamp(4rem, 8vw, 7rem);
+  }
+  /* título en mayúsculas bold; un poco más chico que el h1 de las otras
+     páginas porque comparte el renglón con la pregunta */
+  .faq-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.75rem, 6.4vw, 6.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+  }
+  .faq-title__w { display: block; }
+
+  .faq-qa {
+    position: relative;
+    text-align: center;
+  }
+  .faq-extra {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.5rem, 1.2vw, 0.9rem);
+    margin-top: clamp(0.75rem, 1.6vw, 1.25rem);
+  }
+  .faq-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(0.5rem, 1.6vw, 1.5rem);
+    width: 100%;
+  }
+  /* paréntesis altos y finos (Cormorant), negros, más grandes que el texto */
+  .faq-paren {
+    font-family: var(--font-detail);
+    font-size: clamp(5rem, 12.5vw, 12.5rem);
+    line-height: 0.8;
+    color: var(--ink);
+  }
+  /* todas las preguntas comparten la misma celda: la de una o tres líneas se
+     centra en vertical igual que la de dos */
+  .faq-questions { display: grid; align-items: center; }
+  /* la pregunta, en bold como el título (Degular; ¿ y ? en bold del cuerpo) */
+  .faq-q {
+    grid-area: 1 / 1;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    /* grande, casi del peso del título, como en la referencia */
+    font-size: clamp(1.75rem, 3.8vw, 3.9rem);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .faq-q__btn {
+    display: block;
+    width: 100%;
+    padding: 0.2em 0;
+    font: inherit;
+    letter-spacing: inherit;
+    text-align: inherit;
+    text-wrap: inherit;
+    color: var(--ink);
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  .faq-q__btn:hover > span { text-decoration: underline; text-underline-offset: 0.12em; text-decoration-thickness: 2px; }
+  .faq-q__btn:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 4px; }
+  .faq-hint {
+    margin: 0;
+    font-size: var(--fs-small);
+    letter-spacing: 0.04em;
+    color: var(--grey-mid);
+  }
+  /* sin JS no hay clic: el aviso no tiene sentido */
+  .faq:not(.faq--js) .faq-hint { display: none; }
+
+  /* una sola pregunta a la vez */
+  .faq:not(.faq--anim) .faq-q:not(.is-active) { display: none; }
+
+  /* selector de pregunta (solo con JS) */
+  .faq-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 0.5rem;
+  }
+  .faq-nav[hidden] { display: none; }
+  .faq-nav__btn {
+    padding: 0.4rem 0.5rem;
+    font: inherit;
+    font-size: var(--fs-small);
+    letter-spacing: 0.06em;
+    color: var(--grey-mid);
+    background: none;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+    transition: color 0.25s ease, border-color 0.25s ease;
+  }
+  .faq-nav__btn:hover { color: var(--ink); }
+  .faq-nav__btn.is-active { color: var(--ink); border-bottom-color: var(--ink); }
+  .faq-nav__btn:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 2px; }
+
+  /* Con JS: la sección es alta, el escenario queda fijo y cada pregunta entra
+     y sale con el scroll (--a opacidad y --y desplazamiento, ver el script). */
+  /* sin margen de arriba: al cargar ya se está sobre el escenario fijo */
+  .faq--anim { padding-top: 0; }
+  .faq--anim .faq-scene { height: calc(100svh + var(--n) * 50svh); }
+  .faq--anim .faq-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    padding: 4rem 0 0;
+  }
+  .faq--anim .faq-q {
+    opacity: var(--a, 0);
+    transform: translateY(calc(var(--y, 0) * 1px));
+    will-change: transform, opacity;
+  }
+  .faq--anim .faq-q.is-off { visibility: hidden; }
+
+  /* ---------- Respuesta ----------
+     Un renglón como los de Qué hacemos: la pregunta a la izquierda y la
+     respuesta a la derecha. */
+  .faq-answer {
+    padding-bottom: clamp(4rem, 8vw, 7rem);
+    outline: none;
+  }
+  .faq-answer__list { list-style: none; margin: 0; padding: 0; }
+  .faq-answer__item {
+    display: grid;
+    grid-template-columns: 52% 1fr;
+    align-items: center;
+    gap: 1rem 2rem;
+    padding: clamp(1.5rem, 3vw, 2.4rem) 0;
+    border-top: 1px solid var(--grey-line);
+  }
+  /* la misma pregunta, del mismo tamaño que en el escenario de arriba */
+  .faq-answer__q {
+    margin: 0;
+    padding-right: 2rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.75rem, 3.8vw, 3.9rem);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .faq-answer__a { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .faq-answer__a p {
+    margin: 0;
+    max-width: 40ch;
+    font-size: var(--fs-body);
+    line-height: 1.5;
+    color: var(--grey-dark);
+  }
+  .faq-answer__back {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    padding: 0 0 0.3rem;
+    font: inherit;
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--ink);
+    cursor: pointer;
+  }
+  .faq-answer__back[hidden] { display: none; }
+  .faq-answer__back:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 4px; }
+
+  /* con JS la respuesta no se ve hasta elegir una pregunta, y solo se ve esa */
+  .faq--js .faq-answer:not(.is-open) { display: none; }
+  /* abierta: ocupa todo el alto de la pantalla y queda fija un tramo, como el
+     escenario de las preguntas */
+  .faq--js .faq-answer { height: calc(100svh + 40svh); padding-bottom: 0; }
+  .faq--js .faq-answer__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem 0 2rem;
+  }
+  .faq--js .faq-answer__item { border-top: 0; padding: 0; }
+  .faq--js .faq-answer__item:not(.is-active) { display: none; }
+  .faq--js .faq-answer__item { animation: faq-entra 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+  @keyframes faq-entra {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ---------- Celular / tablet ---------- */
+  @media (max-width: 899px) {
+    .faq-stage { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 1.5rem; }
+    .faq-qa { width: 100%; margin-bottom: 5.5rem; } /* lugar para el aviso y los números */
+    .faq-paren { font-size: clamp(3.5rem, 14vw, 5rem); }
+    .faq-answer__item { grid-template-columns: 1fr; text-align: left; }
+    .faq-answer__q { padding-right: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-nav__btn { transition: none; }
+    .faq--js .faq-answer__item { animation: none; }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>(".faq");
+  const scene = document.querySelector<HTMLElement>("[data-faq]");
+  const answer = document.querySelector<HTMLElement>("#faq-answer");
+
+  if (root && scene && answer) {
+    const stage = scene.querySelector<HTMLElement>(".faq-stage")!;
+    const qs = Array.from(scene.querySelectorAll<HTMLElement>(".faq-q"));
+    const btns = Array.from(scene.querySelectorAll<HTMLButtonElement>(".faq-nav__btn"));
+    const nav = scene.querySelector<HTMLElement>(".faq-nav")!;
+    const items = Array.from(answer.querySelectorAll<HTMLElement>(".faq-answer__item"));
+    const back = answer.querySelector<HTMLButtonElement>(".faq-answer__back")!;
+    const n = qs.length;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+    let active = 0; // pregunta que está en el escenario
+    let ticking = false;
+
+    root.classList.add("faq--js");
+    nav.hidden = false;
+    back.hidden = false;
+
+    function mark(i: number) {
+      active = i;
+      qs.forEach((el, k) => el.classList.toggle("is-active", k === i));
+      btns.forEach((b, k) => {
+        b.classList.toggle("is-active", k === i);
+        if (k === i) b.setAttribute("aria-current", "true");
+        else b.removeAttribute("aria-current");
+      });
+    }
+
+    // posición de scroll en la que la pregunta i está en el centro del tramo
+    function posOf(i: number) {
+      const total = scene!.offsetHeight - stage.offsetHeight;
+      const top = scene!.getBoundingClientRect().top + window.scrollY;
+      return top + total * ((i + 0.5) / n);
+    }
+
+    const behavior: ScrollBehavior = reduced ? "auto" : "smooth";
+
+    // clic en la pregunta: se abre abajo, con su respuesta, y el scroll baja
+    function open(i: number) {
+      items.forEach((el, k) => el.classList.toggle("is-active", k === i));
+      answer!.classList.add("is-open");
+      answer!.scrollIntoView({ behavior, block: "start" });
+      answer!.focus({ preventScroll: true });
+    }
+
+    qs.forEach((q, i) =>
+      q.querySelector("button")!.addEventListener("click", () => open(i)),
+    );
+    back.addEventListener("click", () => {
+      const i = items.findIndex((el) => el.classList.contains("is-active"));
+      window.scrollTo({ top: posOf(Math.max(i, 0)), behavior });
+    });
+
+    if (reduced) {
+      // sin animación: se elige con los números y se muestra una por vez
+      btns.forEach((b, i) => b.addEventListener("click", () => mark(i)));
+    } else {
+      root.classList.add("faq--anim");
+
+      function update() {
+        ticking = false;
+        const total = scene!.offsetHeight - stage.offsetHeight;
+        const p = clamp(-scene!.getBoundingClientRect().top / total, 0, 1);
+        const t = p * n;
+        qs.forEach((q, i) => {
+          const c = i + 0.5;
+          // la primera y la última se quedan quietas en los extremos del recorrido
+          const tt = i === 0 ? Math.max(t, c) : i === n - 1 ? Math.min(t, c) : t;
+          const a = clamp(1 - (Math.abs(tt - c) - 0.28) / 0.22, 0, 1);
+          q.style.setProperty("--a", a.toFixed(3));
+          q.style.setProperty("--y", clamp((c - tt) * 60, -60, 60).toFixed(1));
+          q.classList.toggle("is-off", a < 0.02);
+        });
+        const now = clamp(Math.floor(t), 0, n - 1);
+        if (now !== active) mark(now);
+      }
+
+      window.addEventListener(
+        "scroll",
+        () => {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(update);
+          }
+        },
+        { passive: true },
+      );
+      window.addEventListener("resize", update);
+
+      // elegir un número lleva el scroll hasta esa pregunta
+      btns.forEach((b, i) => b.addEventListener("click", () => window.scrollTo({ top: posOf(i), behavior })));
+      update();
+    }
+  }
+</script>
