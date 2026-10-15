@@ -1,0 +1,67 @@
+---
+// Posición del logo tipográfico en el header: "left" | "center" | "right"
+const { logoPosition = "right" } = Astro.props;
+---
+
+<header class="site-header" data-logo-pos={logoPosition}>
+  <a class="site-logo" href="/" aria-label="Belfast Construction Management, ir al inicio">
+    <!-- dos capas del mismo logo: blanca sobre la foto, negra sobre el fondo
+         blanco. El script recorta cada una según por dónde pasa el borde de
+         la hoja blanca, así el color cambia justo donde el logo la cruza. -->
+    <img
+      class="site-logo__dark"
+      src="/recursos-marca/wordmark-belfast-cm-black-hd.png"
+      alt="Belfast Construction Management"
+      width="1439"
+      height="175"
+    />
+    <img
+      class="site-logo__light"
+      src="/recursos-marca/wordmark-belfast-cm-white.png"
+      alt=""
+      width="1439"
+      height="175"
+      aria-hidden="true"
+    />
+  </a>
+</header>
+
+<style is:global>
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    display: flex;
+    justify-content: center;
+    padding: clamp(1rem, 2.4vw, 1.75rem) var(--gutter);
+    pointer-events: none;
+  }
+  .site-header[data-logo-pos="left"] { justify-content: flex-start; }
+  .site-header[data-logo-pos="right"] { justify-content: flex-end; }
+
+  .site-logo {
+    position: relative;
+    display: block;
+    width: var(--logo-w);
+    border-bottom: 0;
+    pointer-events: auto;
+    opacity: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+  .site-logo img { display: block; width: 100%; height: auto; }
+  .site-logo__light {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(0 0 100% 0);
+  }
+  .site-logo:focus-visible { outline-color: var(--yellow-03); }
+  html.is-docked .site-logo,
+  html.is-loaded .site-logo { opacity: 1; }
+</style>
+
+<script>
+  import "../scripts/logo-scroll.js";
+</script>

@@ -1,0 +1,317 @@
+---
+import { Image } from "astro:assets";
+import cocina from "../assets/obras/obra-01-cocina.jpg";
+import luzSombra from "../assets/obras/obra-02-luz-sombra.jpg";
+import living from "../assets/obras/obra-03-living.jpg";
+import jardin from "../assets/obras/obra-04-jardin.jpg";
+import bano from "../assets/obras/obra-05-bano.jpg";
+import losa from "../assets/obras/obra-06-losa-obra.jpg";
+import pozo from "../assets/obras/obra-07-pozo-hormigon.jpg";
+import estructura from "../assets/obras/obra-08-estructura-hormigon.jpg";
+
+// orden definido por la clienta (empieza por la cocina)
+const photos = [
+  { src: cocina, alt: "Cocina con muebles de madera y alacenas con vidrio" },
+  { src: luzSombra, alt: "Luz y sombra de una planta sobre una pared interior" },
+  { src: living, alt: "Living comedor con mesa, sillas y cortinas" },
+  { src: jardin, alt: "Jardín interior con plantas junto a un ventanal" },
+  { src: bano, alt: "Baño con mesada de mármol oscuro y cortinas de lino" },
+  { src: losa, alt: "Operarios colando hormigón sobre una losa" },
+  { src: pozo, alt: "Botas de obra sobre hormigón fresco" },
+  { src: estructura, alt: "Estructura de hormigón en un ambiente de obra" },
+];
+
+const slogan = "We portray what we aspire to see.";
+const sloganLines = ["We portray", "what we", "aspire to", "see."];
+
+// cada letra es un span numerado (los espacios no cuentan): el script las
+// va pintando de negro, una tras otra, mientras se scrollean las fotos
+let letterIndex = 0;
+const lines = sloganLines.map((line) =>
+  [...line].map((ch) => (ch === " " ? { ch, i: null } : { ch, i: letterIndex++ })),
+);
+---
+
+<section class="seq" id="slogan" style={`--n:${photos.length}`} aria-label="Slogan y obras">
+  <div class="seq__stage">
+    <p class="seq__slogan" lang="en">
+      <span class="sr-only">{slogan}</span>
+      {
+        lines.map((tokens, i) => (
+          <span class="slogan__line" style={`--i:${i}`} aria-hidden="true">
+            <span>{tokens.map((t) => (t.i === null ? " " : <span class="ch">{t.ch}</span>))}</span>
+          </span>
+        ))
+      }
+    </p>
+
+    <ul class="seq__cards">
+      {
+        photos.map((p) => (
+          <li class="seq__card">
+            <Image
+              src={p.src}
+              alt={p.alt}
+              widths={[360, 506]}
+              sizes="(max-width: 700px) 45vw, 22vw"
+              format="webp"
+              quality={78}
+              loading="lazy"
+              decoding="async"
+            />
+          </li>
+        ))
+      }
+    </ul>
+
+    <a class="seq__link" href="/obras">
+      <span>Explorá nuestras obras</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+        <path d="M3 11 11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3" />
+      </svg>
+    </a>
+  </div>
+</section>
+
+<style is:global>
+  /* Base (sin JS o con reduced-motion): slogan, una sola foto y el acceso,
+     en flujo normal. La secuencia pegajosa la activa .seq--on desde JS. */
+  .seq__stage {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(1.5rem, 4svh, 3rem);
+    padding: 14svh var(--gutter) 12svh;
+  }
+
+  .seq__slogan {
+    margin: 0;
+    font-family: var(--font-detail);
+    font-weight: 400;
+    font-size: clamp(3.25rem, 12.5vw, 12rem);
+    line-height: 1;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .slogan__line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+    margin-left: calc(var(--i) * clamp(1rem, 9vw, 9rem));
+  }
+  .slogan__line > span {
+    display: inline-block;
+    transform: translateY(112%);
+    transition: transform 1.1s cubic-bezier(0.65, 0, 0.35, 1) calc(var(--i) * 0.14s);
+  }
+  .seq.is-in .slogan__line > span { transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .slogan__line > span { transform: none; }
+  }
+
+  .seq__cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    align-self: flex-end;
+    height: min(52svh, 480px);
+    aspect-ratio: 9 / 16;
+  }
+  .seq__card {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 2px;
+    background: var(--ink);
+  }
+  .seq__card:not(:first-child) { display: none; }
+  .seq__card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
+    transition: filter 0.35s ease, transform 0.35s ease;
+  }
+  /* solo con mouse real: en touch el :hover queda "pegado" en la última
+     foto tocada */
+  @media (hover: hover) and (pointer: fine) {
+    .seq__card img:hover {
+      filter: grayscale(0) contrast(1.05);
+      transform: scale(1.04);
+    }
+  }
+
+  .seq__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    align-self: flex-start;
+    padding-bottom: 0.3rem;
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid var(--ink);
+  }
+  .seq__link svg { transition: transform 0.25s ease; }
+  .seq__link:hover svg,
+  .seq__link:focus-visible svg { transform: translate(2px, -2px); }
+
+  /* ---------- Secuencia pegajosa (JS) ---------- */
+
+  .seq--on {
+    --unit: 62svh;
+    position: relative;
+    height: calc(100svh + (var(--n) + 0.5) * var(--unit));
+  }
+  .seq--on .seq__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 0;
+    display: block;
+    padding: 0;
+    overflow: hidden;
+  }
+  .seq--on .seq__slogan {
+    position: absolute;
+    left: var(--gutter);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: clamp(3rem, min(9vw, 16svh), 11rem);
+  }
+  .seq--on .seq__cards {
+    position: absolute;
+    right: clamp(1.25rem, 7vw, 8rem);
+    top: 50%;
+    transform: translateY(-50%);
+    height: min(64svh, 600px);
+    overflow: hidden;
+    border-radius: 2px;
+  }
+  .seq--on .seq__card:not(:first-child) { display: block; }
+  .seq--on .seq__card {
+    transform: translateY(var(--y, 100%)) scale(calc(1 - 0.045 * var(--cover, 0)));
+    will-change: transform;
+  }
+  .seq--on .seq__card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: calc(var(--cover, 0) * 0.45);
+    pointer-events: none;
+  }
+  .seq--on .seq__link {
+    position: absolute;
+    left: var(--gutter);
+    bottom: clamp(1.5rem, 5svh, 3rem);
+  }
+
+  @media (max-width: 700px) {
+    .seq--on .seq__slogan { top: 19svh; transform: none; font-size: clamp(2.75rem, 12.5vw, 4.5rem); }
+    .seq--on .seq__cards {
+      top: auto;
+      bottom: clamp(4.5rem, 12svh, 7rem);
+      right: var(--gutter);
+      transform: none;
+      height: min(36svh, 300px);
+    }
+  }
+</style>
+
+<script>
+  const seq = document.querySelector<HTMLElement>(".seq");
+  const sloganText = document.querySelector(".seq__slogan");
+
+  if (seq && sloganText) {
+    // el slogan sube línea por línea cuando entra a la pantalla (retardo por
+    // --i en el CSS); se observa el texto y no la sección, que es muy alta
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          seq.classList.add("is-in");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(sloganText);
+
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      initSequence(seq);
+    }
+  }
+
+  function initSequence(section: HTMLElement) {
+    const stage = section.querySelector<HTMLElement>(".seq__stage")!;
+    const cards = Array.from(section.querySelectorAll<HTMLElement>(".seq__card"));
+    const letters = Array.from(section.querySelectorAll<HTMLElement>(".ch"));
+    const units = cards.length + 0.5;
+    const last: string[] = [];
+    const lastLetter: number[] = [];
+    let ticking = false;
+
+    // gris apagado -> negro de la marca (#111111)
+    const DIM = [173, 173, 173];
+    const INK = [17, 17, 17];
+
+    const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+    const ease = (u: number) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+
+    section.classList.add("seq--on");
+
+    // cada foto entra desde el borde inferior del marco y tapa a la anterior;
+    // la anterior se achica y se oscurece un poco mientras la nueva la cubre
+    function update() {
+      ticking = false;
+      const total = section.offsetHeight - stage.offsetHeight;
+      const progress = clamp(-section.getBoundingClientRect().top / total, 0, 1);
+      const t = progress * units;
+
+      // el slogan se pinta de negro letra por letra: arranca con la primera
+      // ya negra y termina cuando entró la última foto
+      const fill = clamp(t / cards.length, 0, 1);
+      const pos = 1 + fill * (letters.length - 1);
+      letters.forEach((letter, i) => {
+        const k = Math.round(clamp(pos - i, 0, 1) * 100);
+        if (lastLetter[i] === k) return;
+        lastLetter[i] = k;
+        const c = DIM.map((d, j) => Math.round(d + (INK[j] - d) * (k / 100)));
+        letter.style.color = `rgb(${c[0]},${c[1]},${c[2]})`;
+      });
+
+      cards.forEach((card, i) => {
+        const y = (1 - ease(clamp(t - i, 0, 1))) * 100;
+        const cover = i < cards.length - 1 ? clamp(t - (i + 1), 0, 1) : 0;
+        const key = `${y.toFixed(2)}|${cover.toFixed(3)}`;
+        if (last[i] === key) return;
+        last[i] = key;
+        card.style.setProperty("--y", `${y}%`);
+        card.style.setProperty("--cover", String(cover));
+        card.style.zIndex = String(i);
+      });
+    }
+
+    function request() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }
+
+    window.addEventListener("scroll", request, { passive: true });
+    window.addEventListener("resize", request);
+    update();
+
+    // las fotos arrancan en lazy; una vez cargada la página se piden todas
+    // para que ninguna aparezca vacía a mitad de la secuencia
+    window.addEventListener("load", () => {
+      cards.forEach((card) => {
+        card.querySelector("img")?.setAttribute("loading", "eager");
+      });
+    });
+  }
+</script>

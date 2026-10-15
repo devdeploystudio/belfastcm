@@ -1,0 +1,9 @@
+// wrangler.jsonc
+{
+  "name": "belfastcm",
+  "compatibility_date": "2026-10-07",
+  "assets": {
+    "directory": "dist",
+    "not_found_handling": "404-page" // sirve 404.html en rutas que no existen
+  }
+}

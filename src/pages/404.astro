@@ -1,0 +1,36 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="Página no encontrada - Belfast CM"
+  description="Esta página no existe. Volvé al inicio de Belfast Construction Management."
+  path="/404"
+  noindex
+>
+  <main class="notfound">
+    <h1 class="notfound__title">Esta página no existe</h1>
+    <p class="notfound__back"><a href="/">Volver al inicio</a></p>
+  </main>
+</Base>
+
+<style is:global>
+  .notfound {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 0 var(--gutter);
+    text-align: center;
+  }
+  .notfound__title {
+    margin: 0;
+    font-family: var(--font-detail);
+    font-weight: 400;
+    font-size: clamp(2rem, 6vw, 4rem);
+    line-height: 1.05;
+  }
+  .notfound__back { margin: 0; font-size: 0.9rem; letter-spacing: 0.04em; }
+</style>

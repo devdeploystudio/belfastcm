@@ -1,0 +1,39 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.*
+.dev.vars
+
+# Cloudflare / wrangler local state
+.wrangler/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# editores y herramientas locales (no son parte del sitio)
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# archivos de IA / herramientas de diseño y análisis
+.claude/
+.impeccable/
+CLAUDE.md
+AGENTS.md
+graphify-out/
