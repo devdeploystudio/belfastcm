@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import { degular } from "../lib/degular";
 ---
 
 <Base
@@ -9,8 +10,18 @@ import Base from "../layouts/Base.astro";
   noindex
 >
   <main class="notfound">
-    <h1 class="notfound__title">Esta página no existe</h1>
-    <p class="notfound__back"><a href="/">Volver al inicio</a></p>
+    <!-- Degular bold como el resto de los títulos; la tilde va dibujada aparte
+         (la demo no la trae) y el nombre accesible en aria-label -->
+    <h1 class="notfound__title page-title" aria-label="Esta página no existe">
+      <span aria-hidden="true" set:html={degular("Esta página no existe")} />
+    </h1>
+    <!-- se tipea solo, con la flecha, como todos los enlaces (type-links.js) -->
+    <a class="link-arrow notfound__back" href="/">
+      <span>Volver al inicio</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+        <path d="M3 11 11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3" />
+      </svg>
+    </a>
   </main>
 </Base>
 
@@ -21,16 +32,15 @@ import Base from "../layouts/Base.astro";
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1.25rem;
-    padding: 0 var(--gutter);
+    padding: 5rem var(--gutter) 2rem;
     text-align: center;
   }
-  .notfound__title {
-    margin: 0;
-    font-family: var(--font-detail);
-    font-weight: 400;
-    font-size: clamp(2rem, 6vw, 4rem);
-    line-height: 1.05;
+  /* más chico que el h1 de las demás páginas: un error no pide tanto peso */
+  .notfound .notfound__title {
+    max-width: 12em;
+    font-size: clamp(1.9rem, 4.6vw, 3.75rem);
+    text-wrap: balance;
   }
-  .notfound__back { margin: 0; font-size: 0.9rem; letter-spacing: 0.04em; }
+  /* el enlace va separado del título, un poco más abajo */
+  .notfound__back { margin-top: clamp(2.5rem, 8vh, 5rem); }
 </style>
