@@ -67,7 +67,7 @@ const servicios = [
 
     <!-- Bloque fijo: la sección es alta y el listado queda pegado mientras se
          scrollea; los servicios entran de a uno (ver el script) -->
-    <div class="svc-scene" data-svc-scene>
+    <div class="svc-scene" data-svc-scene style={`--n:${servicios.length}`}>
     <div class="svc-stage">
     <ol class="svc-list" data-svc>
       {
@@ -103,6 +103,8 @@ const servicios = [
         ))
       }
     </ol>
+    <!-- contador del modo celular (un servicio por vez) -->
+    <p class="svc-count" aria-hidden="true"><span>01</span> / {`0${servicios.length}`}</p>
     </div>
     </div>
   </main>
@@ -293,6 +295,49 @@ const servicios = [
   /* mientras no entró, no se puede abrir ni enfocar */
   .svc-scene--rise .svc.is-wait { visibility: hidden; }
 
+  /* ---------- Celular: un servicio por vez ----------
+     En una pantalla chica los seis servicios con su texto no entran juntos, así
+     que el escenario queda fijo y muestra uno a la vez (título, texto y
+     etiquetas), que cambia con el scroll. Sin JS queda el listado desplegado. */
+  .svc-count { display: none; }
+  .svc-scene--stack { height: calc(100svh + var(--n) * 50svh); }
+  .svc-scene--stack .svc-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5rem 0 2.5rem;
+  }
+  .svc-list--stack { display: grid; }
+  .svc-list--stack .svc {
+    grid-area: 1 / 1;
+    align-self: center;
+    border-top: 0;
+    opacity: var(--a, 0);
+    transform: translateY(calc(var(--y, 0) * 1px));
+    will-change: transform, opacity;
+  }
+  .svc-list--stack .svc.is-off { visibility: hidden; }
+  .svc-list--stack .svc__head {
+    display: block;
+    padding: 0 0 1.25rem;
+    pointer-events: none;
+    cursor: default;
+  }
+  .svc-list--stack .svc__num { display: block; margin-bottom: 0.9rem; }
+  .svc-list--stack .svc__title { font-size: clamp(1.9rem, 8.5vw, 3rem); }
+  .svc-list--stack .svc__panel-inner { padding-left: 0; }
+  .svc-list--stack .svc__panel-inner > :last-child { margin-bottom: 0; }
+  .svc-scene--stack .svc-count {
+    display: block;
+    margin: 1.5rem 0 0;
+    text-align: center;
+    font-size: var(--fs-small);
+    letter-spacing: 0.08em;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .svc-list--js .svc__panel { transition: none; }
   }
@@ -300,10 +345,37 @@ const servicios = [
 
 <script>
   import { stageRows } from "../scripts/stage-rows.js";
+  import { stackScroll } from "../scripts/stack-scroll.js";
 
   const list = document.querySelector<HTMLElement>("[data-svc]");
+  // celular (y sin reduced-motion): un servicio por vez, fijo y atado al scroll
+  const stackMode =
+    window.matchMedia("(max-width: 699px)").matches &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  if (list) {
+  if (list && stackMode) {
+    const scene = document.querySelector<HTMLElement>("[data-svc-scene]");
+    const stage = scene?.querySelector<HTMLElement>(".svc-stage");
+    const count = scene?.querySelector<HTMLElement>(".svc-count span");
+    if (scene && stage && count) {
+      const items = Array.from(list.querySelectorAll<HTMLElement>(".svc"));
+      // no es acordeón: los botones solo muestran el título
+      list.querySelectorAll<HTMLButtonElement>(".svc__head").forEach((b) => {
+        b.tabIndex = -1;
+        b.setAttribute("aria-expanded", "true");
+      });
+      list.classList.add("svc-list--stack");
+      scene.classList.add("svc-scene--stack");
+      stackScroll({
+        scene,
+        stage,
+        items,
+        onActive: (i) => (count.textContent = String(i + 1).padStart(2, "0")),
+      });
+    }
+  }
+
+  if (list && !stackMode) {
     const items = Array.from(list.querySelectorAll<HTMLElement>(".svc"));
     const heads = items.map((li) => li.querySelector<HTMLButtonElement>(".svc__head")!);
     const wide = window.matchMedia("(min-width: 900px) and (hover: hover) and (pointer: fine)");

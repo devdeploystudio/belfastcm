@@ -164,26 +164,43 @@ const isCurrent = (href: string) => (href === "/" ? current === "/" : current.st
   /* Debajo de este ancho no entran las 7 secciones junto al logo: con JS se
      colapsan en un menú a pantalla completa (sin JS quedan en la barra). */
   @media (max-width: 1179px) {
+    /* sin desenfoque: con backdrop-filter el header pasa a ser el "contenedor"
+       de todo lo que tenga position: fixed, y el menú a pantalla completa se
+       medía contra la barra (65px de alto) en vez de contra la pantalla; además
+       dejaba una tira borrosa sobre el video del inicio */
+    html.js .site-header {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
     html.js .menu-toggle { display: inline-flex; z-index: 2; }
     html.js .site-nav {
       position: fixed;
       inset: 0;
       z-index: 1;
       display: flex;
-      align-items: center;
-      padding: 0 var(--gutter);
+      /* margen blanco arriba para que la lista no quede debajo de la barra, y
+         scroll propio si en una pantalla baja no entra entera */
+      padding: 6rem var(--gutter) 2.5rem;
+      overflow-y: auto;
+      overscroll-behavior: contain;
       background: var(--bg);
       color: var(--ink);
     }
     html.js .site-nav:not(.is-open) { opacity: 0; visibility: hidden; }
     html.js .site-nav.is-open { opacity: 1; visibility: visible; }
-    html.js .site-nav ul { flex-direction: column; flex-wrap: nowrap; gap: 0.75rem; }
+    /* margin auto: centrada en el alto si sobra lugar, pegada arriba (bajo el
+       margen) si no entra */
+    html.js .site-nav ul { flex-direction: column; flex-wrap: nowrap; gap: 0.75rem; margin-block: auto; }
     html.js .site-nav a {
       font-family: var(--font-detail);
-      font-size: clamp(2rem, 8vw, 3.5rem);
+      font-size: clamp(1.75rem, 7.5vw, 3.25rem);
       line-height: 1.1;
       letter-spacing: -0.01em;
       text-transform: none;
+    }
+    @media (max-height: 640px) {
+      html.js .site-nav ul { gap: 0.4rem; }
+      html.js .site-nav a { font-size: clamp(1.5rem, 6vw, 2.25rem); }
     }
     html.menu-open { overflow: hidden; }
     html.menu-open .menu-toggle { color: var(--ink); }

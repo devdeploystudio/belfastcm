@@ -60,7 +60,7 @@ const pasos = [
     <!-- Bloque fijo: el listado queda pegado mientras se scrollea y los pasos
          entran de a uno (ver scripts/stage-rows.js) -->
     <section class="pasos-section" aria-label="Etapas de trabajo">
-      <div class="pasos-scene" data-pasos-scene>
+      <div class="pasos-scene" data-pasos-scene style={`--n:${pasos.length}`}>
         <div class="pasos-stage">
           <ol class="pasos" data-pasos>
             {
@@ -77,6 +77,8 @@ const pasos = [
               ))
             }
           </ol>
+          <!-- contador del modo celular (un paso por vez) -->
+          <p class="paso-count" aria-hidden="true"><span>01</span> / {`0${pasos.length}`}</p>
         </div>
       </div>
     </section>
@@ -141,12 +143,17 @@ const pasos = [
     );
     transform: translate3d(var(--sx, 50vw), var(--sy, 50vh), 0);
   }
-  /* sin mouse (celular, tablet): un resplandor suave y quieto abajo a la
-     derecha, sin seguimiento */
+  /* sin mouse (celular, tablet): el resplandor se ve siempre, arranca arriba a
+     la derecha y el script lo va bajando con el scroll (valores iniciales
+     para cuando no hay JS o con reduced-motion: quieto arriba) */
   @media (hover: none), (pointer: coarse) {
-    .como-glow { opacity: 0.55; }
-    .como-glow__spot { --gx: 78vw; --gy: 70vh; }
-    .como-glow__spot--slow { --sx: 70vw; --sy: 78vh; }
+    .como-glow {
+      opacity: 0.55;
+      --gx: 76vw;
+      --gy: 14vh;
+      --sx: 24vw;
+      --sy: 22vh;
+    }
   }
 
   .como-hero__inner {
@@ -173,6 +180,10 @@ const pasos = [
      del tamaño del título de Qué hacemos */
   @media (max-width: 699px) {
     .como-title__w { display: block; }
+    /* en celular la portada no ocupa la pantalla entera con un hueco en el
+       medio: la bajada va justo debajo del título */
+    .como-hero { display: block; min-height: auto; padding-bottom: 3rem; }
+    .como-lead { position: static; margin: 2rem auto 0; }
   }
 
   /* ---------- Pasos ----------
@@ -245,6 +256,43 @@ const pasos = [
   }
   .pasos-scene--rise .paso.is-wait { visibility: hidden; }
 
+  /* ---------- Celular: un paso por vez ----------
+     Los cuatro pasos con su texto no entran juntos en una pantalla chica: el
+     escenario queda fijo y muestra uno a la vez, que cambia con el scroll. */
+  .paso-count { display: none; }
+  .pasos-scene--stack { height: calc(100svh + var(--n) * 50svh); }
+  .pasos-scene--stack .pasos-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5rem 0 2.5rem;
+  }
+  .pasos--stack { display: grid; }
+  .pasos--stack .paso {
+    grid-area: 1 / 1;
+    align-self: center;
+    border-top: 0;
+    padding: 0;
+    opacity: var(--a, 0);
+    transform: translateY(calc(var(--y, 0) * 1px));
+    will-change: transform, opacity;
+  }
+  .pasos--stack .paso.is-off { visibility: hidden; }
+  .pasos--stack .paso__head { display: block; }
+  .pasos--stack .paso__num { display: block; margin-bottom: 0.9rem; }
+  .pasos--stack .paso__title { font-size: clamp(1.9rem, 8.5vw, 3rem); }
+  .pasos--stack .paso__text { padding: 1.25rem 0 0; }
+  .pasos-scene--stack .paso-count {
+    display: block;
+    margin: 1.5rem 0 0;
+    text-align: center;
+    font-size: var(--fs-small);
+    letter-spacing: 0.08em;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .como-glow { transition: none; }
   }
@@ -252,19 +300,29 @@ const pasos = [
 
 <script>
   import { stageRows } from "../scripts/stage-rows.js";
+  import { stackScroll } from "../scripts/stack-scroll.js";
 
   // ----- pasos: bloque fijo con aparición por scroll -----
   const scene = document.querySelector<HTMLElement>("[data-pasos-scene]");
   const stage = scene?.querySelector<HTMLElement>(".pasos-stage");
   const list = document.querySelector<HTMLElement>("[data-pasos]");
   if (scene && stage && list) {
-    stageRows({
-      scene,
-      stage,
-      list,
-      items: Array.from(list.querySelectorAll<HTMLElement>(".paso")),
-      prefix: "pasos-scene",
-    });
+    const items = Array.from(list.querySelectorAll<HTMLElement>(".paso"));
+    const count = scene.querySelector<HTMLElement>(".paso-count span");
+    const sinAnimar = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (window.matchMedia("(max-width: 699px)").matches && !sinAnimar && count) {
+      // celular: un paso por vez, fijo y atado al scroll
+      list.classList.add("pasos--stack");
+      scene.classList.add("pasos-scene--stack");
+      stackScroll({
+        scene,
+        stage,
+        items,
+        onActive: (i) => (count.textContent = String(i + 1).padStart(2, "0")),
+      });
+    } else {
+      stageRows({ scene, stage, list, items, prefix: "pasos-scene" });
+    }
   }
 
   // ----- resplandor: dos manchas siguen al mouse, una más lenta que la otra -----
@@ -312,5 +370,34 @@ const pasos = [
       if (!raf) raf = requestAnimationFrame(frame);
     });
     document.documentElement.addEventListener("pointerleave", () => glow.classList.remove("is-on"));
+  }
+
+  // sin mouse (celular, tablet): el resplandor arranca bien arriba y va bajando
+  // con el scroll; la mancha lenta va un poco más arriba, con otro ritmo
+  if (glow && !fine.matches && !calm.matches) {
+    let esperando = false;
+    function bajar() {
+      esperando = false;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const max = document.documentElement.scrollHeight - h;
+      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      glow!.style.setProperty("--gx", `${(w * 0.76).toFixed(0)}px`);
+      glow!.style.setProperty("--gy", `${(h * (0.14 + p * 0.74)).toFixed(0)}px`);
+      glow!.style.setProperty("--sx", `${(w * (0.24 + p * 0.1)).toFixed(0)}px`);
+      glow!.style.setProperty("--sy", `${(h * (0.2 + p * 0.55)).toFixed(0)}px`);
+    }
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!esperando) {
+          esperando = true;
+          requestAnimationFrame(bajar);
+        }
+      },
+      { passive: true },
+    );
+    window.addEventListener("resize", bajar);
+    bajar();
   }
 </script>

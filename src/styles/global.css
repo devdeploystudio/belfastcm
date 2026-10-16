@@ -71,6 +71,13 @@ body {
   min-height: 100svh;
   overflow-x: hidden;
 }
+/* clip en vez de hidden donde se pueda: igual recorta lo que se sale a los
+   costados, pero no convierte al body en un contenedor de scroll, que en
+   algunos celulares (Safari de iPhone sobre todo) rompe el position: sticky de
+   todos los bloques fijos */
+@supports (overflow: clip) {
+  body { overflow-x: clip; }
+}
 
 img { display: block; max-width: 100%; height: auto; }
 
