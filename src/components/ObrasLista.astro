@@ -157,6 +157,28 @@ import { obras } from "../data/obras.js";
   /* una fila todavía invisible no reacciona al mouse ni al toque */
   .obras--anim .obras__item:not(.is-visible) { pointer-events: none; }
 
+  /* ---------- Celular / pantalla táctil ----------
+     No hay "pasar por encima": los nombres van alineados a la izquierda, la foto
+     fija a la derecha, y mientras se scrollea se va marcando una obra tras otra
+     (la elegida en negro) y la foto cambia a la suya (ver el script). */
+  .obras--compact .obras__stage { align-items: stretch; text-align: left; }
+  .obras--compact .obras__items { width: 58%; }
+  .obras--compact .obras__item {
+    margin-inline: 0;
+    padding-block: 0.16em;
+    font-size: clamp(1.9rem, 9.4vw, 3.4rem);
+    line-height: 1.02;
+  }
+  .obras--compact .obras__preview {
+    left: auto;
+    right: 0;
+    top: 50%;
+    width: 36%;
+    max-width: 230px;
+    transform: translateY(-50%);
+  }
+  .obras--compact.obras--anim { height: calc(100svh + 260svh); }
+
   @media (prefers-reduced-motion: reduce) {
     .obras__img { transition: none; }
   }
@@ -171,6 +193,9 @@ import { obras } from "../data/obras.js";
     const preview = list.querySelector<HTMLElement>(".obras__preview")!;
     const hover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // celular / pantalla táctil (o ventana muy angosta): sin hover
+    const compact = !hover || window.innerWidth < 700;
+    if (compact) list.closest<HTMLElement>(".obras")!.classList.add("obras--compact");
 
     const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
     const target = { x: 0, y: 0 };
@@ -275,9 +300,10 @@ import { obras } from "../data/obras.js";
       kick();
     });
 
-    // en pantallas táctiles no hay "pasar por encima": mientras se scrollea
-    // queda activa la fila que cruza el centro de la pantalla
-    if (!hover) {
+    // sin animación (reduced-motion) la lista queda en flujo normal: se marca la
+    // fila que cruza el centro de la pantalla. Con animación, el escenario está
+    // fijo y la obra activa la marca el progreso del scroll (ver update).
+    if (compact && reduced) {
       const center = new IntersectionObserver(
         (entries) => {
           entries.forEach((e) => {
@@ -316,11 +342,22 @@ import { obras } from "../data/obras.js";
         const p = forced ? 1 : clamp(-section.getBoundingClientRect().top / total, 0, 1);
         heading.style.setProperty("--h", ease(range(p, 0, 0.18)).toFixed(3));
         items.forEach((el, i) => {
-          const start = 0.12 + i * 0.09;
-          const o = ease(range(p, start, start + 0.22));
+          // celular: las obras entran rápido y el resto del recorrido se usa para
+          // ir marcando una por una; escritorio: entran una tras otra
+          const start = compact ? 0.02 + i * 0.02 : 0.12 + i * 0.09;
+          const o = ease(range(p, start, start + (compact ? 0.1 : 0.22)));
           el.style.setProperty("--o", o.toFixed(3));
           el.classList.toggle("is-visible", o > 0.6);
         });
+        if (compact) {
+          // la obra elegida avanza con el scroll; la foto de la derecha cambia
+          if (p < 0.2) {
+            if (active !== -1) clearActive();
+          } else {
+            const q = clamp((p - 0.2) / 0.78, 0, 0.999);
+            setActive(Math.floor(q * items.length));
+          }
+        }
       }
 
       // con teclado se puede llegar a una obra que todavía no apareció: al

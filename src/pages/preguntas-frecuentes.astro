@@ -53,19 +53,19 @@ const faqs = [
 
         <div class="faq-qa">
           <div class="faq-row">
-            <span class="faq-paren" aria-hidden="true">(</span>
             <div class="faq-questions">
               {
                 faqs.map((f, i) => (
                   <h2 class={`faq-q${i === 0 ? " is-active" : ""}`} data-i={i}>
+                    <span class="faq-paren" aria-hidden="true">(</span>
                     <button type="button" class="faq-q__btn" aria-controls="faq-answer" aria-label={`${f.q} Ver la respuesta`}>
                       <span aria-hidden="true" set:html={degular(f.q)} />
                     </button>
+                    <span class="faq-paren" aria-hidden="true">)</span>
                   </h2>
                 ))
               }
             </div>
-            <span class="faq-paren" aria-hidden="true">)</span>
           </div>
 
           <!-- el aviso y los números van fuera del flujo: así la pregunta y los
@@ -171,13 +171,7 @@ const faqs = [
     gap: clamp(0.5rem, 1.2vw, 0.9rem);
     margin-top: clamp(0.75rem, 1.6vw, 1.25rem);
   }
-  .faq-row {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: clamp(0.5rem, 1.6vw, 1.5rem);
-    width: 100%;
-  }
+  .faq-row { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; }
   /* paréntesis altos y finos (Cormorant), negros, más grandes que el texto */
   .faq-paren {
     font-family: var(--font-detail);
@@ -191,6 +185,12 @@ const faqs = [
   /* la pregunta, en bold como el título (Degular; ¿ y ? en bold del cuerpo) */
   .faq-q {
     grid-area: 1 / 1;
+    /* los paréntesis van pegados al texto de cada pregunta: el botón toma el
+       ancho real de su texto (--tw, lo mide el script) y no el de la columna */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.1rem, 0.5vw, 0.4rem);
     margin: 0;
     font-family: var(--font-display);
     font-weight: 700;
@@ -202,7 +202,9 @@ const faqs = [
   }
   .faq-q__btn {
     display: block;
-    width: 100%;
+    flex: 0 1 auto;
+    width: var(--tw, auto);
+    max-width: 100%;
     padding: 0.2em 0;
     font: inherit;
     letter-spacing: inherit;
@@ -347,7 +349,15 @@ const faqs = [
 
   /* ---------- Celular / tablet ---------- */
   @media (max-width: 899px) {
-    .faq-stage { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 1.5rem; }
+    /* el título y la pregunta van juntos, centrados en la pantalla: sin
+       align-content cada uno se centraba en su mitad y quedaban muy separados */
+    .faq-stage {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      align-content: center;
+      text-align: center;
+      gap: clamp(1.75rem, 5vh, 2.75rem);
+    }
     .faq-qa { width: 100%; margin-bottom: 5.5rem; } /* lugar para el aviso y los números */
     .faq-paren { font-size: clamp(3.5rem, 14vw, 5rem); }
     .faq-answer__item { grid-template-columns: 1fr; text-align: left; }
@@ -379,6 +389,24 @@ const faqs = [
     let ticking = false;
 
     root.classList.add("faq--js");
+
+    // los paréntesis abrazan a cada pregunta: se mide el ancho de su renglón más
+    // largo y el botón toma ese ancho (sin esto ocupa toda la columna y los
+    // paréntesis quedan lejos de las preguntas cortas)
+    function ajustar() {
+      qs.forEach((q) => {
+        const btn = q.querySelector<HTMLElement>(".faq-q__btn")!;
+        const texto = btn.querySelector<HTMLElement>(":scope > span")!;
+        btn.style.removeProperty("--tw");
+        const r = document.createRange();
+        r.selectNodeContents(texto);
+        const w = r.getBoundingClientRect().width;
+        if (w > 0) btn.style.setProperty("--tw", `${Math.ceil(w) + 2}px`);
+      });
+    }
+    ajustar();
+    document.fonts?.ready.then(ajustar);
+    window.addEventListener("resize", ajustar);
     nav.hidden = false;
     back.hidden = false;
 

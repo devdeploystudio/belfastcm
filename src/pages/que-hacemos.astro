@@ -53,6 +53,9 @@ const servicios = [
   path="/que-hacemos"
 >
   <main class="hacemos-page">
+    <!-- en celular la cabecera es una pantalla estática: queda pegada un tramo
+         antes de pasar a los servicios (solo CSS, ver .hacemos-hero) -->
+    <div class="hacemos-hero">
     <header class="hacemos-head">
       <!-- Degular con la tilde dibujada aparte (la demo no la trae); el nombre
            accesible va en aria-label para que se lea bien -->
@@ -64,6 +67,7 @@ const servicios = [
         Definimos qué necesitás y organizamos la obra en función de ese alcance.
       </p>
     </header>
+    </div>
 
     <!-- Bloque fijo: la sección es alta y el listado queda pegado mientras se
          scrollea; los servicios entran de a uno (ver el script) -->
@@ -133,6 +137,21 @@ const servicios = [
   .hacemos-lead {
     margin-top: clamp(0.5rem, 2vw, 1.5rem);
     max-width: 22em;
+  }
+
+  /* Celular: el título con su bajada y el texto ocupan una pantalla estática
+     (centrados en el alto) y después vienen los servicios en otra. */
+  @media (max-width: 699px) and (min-height: 560px) {
+    .hacemos-page { padding-top: 0; }
+    .hacemos-hero { height: calc(100svh + 50svh); }
+    .hacemos-hero .hacemos-head {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      margin-bottom: 0;
+      justify-content: center;
+      padding-top: 4rem; /* el alto del header */
+    }
   }
 
   /* ---------- Servicios ----------

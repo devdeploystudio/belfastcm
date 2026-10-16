@@ -156,6 +156,13 @@ const pilares = [
   /* el texto queda por encima del isotipo del cursor (que va sobre el amarillo
      del body y debajo de todo lo demás) */
   html:has(.nosotros) .site-footer { position: relative; z-index: 1; color: var(--nos-fg); }
+  /* menú hamburguesa: el panel a pantalla completa lleva el amarillo de la
+     página; si no, los links blancos quedaban sobre el fondo blanco por defecto
+     y parecía que el menú no abría */
+  @media (max-width: 1179px) {
+    html.js:has(.nosotros) .site-nav { background: var(--nos-bg); }
+    html.menu-open:has(.nosotros) .menu-toggle { color: var(--nos-fg); }
+  }
   html:has(.nosotros) a:focus-visible,
   html:has(.nosotros) .menu-toggle:focus-visible { outline-color: var(--nos-fg); }
 
