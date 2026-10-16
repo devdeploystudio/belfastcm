@@ -175,12 +175,21 @@ const faqs = [
   /* paréntesis altos y finos (Cormorant), negros, más grandes que el texto */
   .faq-paren {
     font-family: var(--font-detail);
+    /* fino: dentro de la pregunta heredaban el bold (700) y Cormorant solo
+       trae el 400, así que el navegador los engrosaba */
+    font-weight: 400;
     font-size: clamp(5rem, 12.5vw, 12.5rem);
     line-height: 0.8;
     color: var(--ink);
   }
   /* todas las preguntas comparten la misma celda: la de una o tres líneas se
      centra en vertical igual que la de dos */
+  /* el glifo de Cormorant es ancho y su panza queda lejos del texto: se lo
+     achica en horizontal hacia el texto (origen del lado del texto) y se lo
+     arrima un poco más, sin tocar la altura */
+  .faq-q > .faq-paren { transform: scaleX(0.68); }
+  .faq-q > .faq-paren:first-child { transform-origin: 100% 50%; margin-right: -0.05em; }
+  .faq-q > .faq-paren:last-child { transform-origin: 0 50%; margin-left: -0.05em; }
   .faq-questions { display: grid; align-items: center; }
   /* la pregunta, en bold como el título (Degular; ¿ y ? en bold del cuerpo) */
   .faq-q {
@@ -204,7 +213,9 @@ const faqs = [
     display: block;
     flex: 0 1 auto;
     width: var(--tw, auto);
-    max-width: 100%;
+    /* las preguntas largas se parten en dos renglones (balanceados) en vez de
+       quedar en uno solo mucho más ancho que las demás */
+    max-width: min(100%, 11.5em);
     padding: 0.2em 0;
     font: inherit;
     letter-spacing: inherit;
