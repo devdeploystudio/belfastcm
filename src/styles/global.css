@@ -22,6 +22,25 @@
   font-display: swap;
 }
 
+/* Itálica regular, para el slogan del inicio (recortada al alfabeto latino) */
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/fonts/Cormorant-Garamond-400-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Solo para la palabra resaltada del bloque "¿Tenés un proyecto…?" (itálica
+   bold, recortada al alfabeto latino) */
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/fonts/Cormorant-Garamond-700-italic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
   --ink: #111111;
   --ink-soft: #2b2b2b;
@@ -40,13 +59,19 @@
 
   /* Escala de texto de las páginas internas (Obras, Qué hacemos, Cómo
      trabajamos): todas usan estos valores, no tamaños propios. */
-  --fs-title: clamp(2.75rem, 9vw, 9rem);       /* h1 de página (Degular) */
+  --fs-title: clamp(2.5rem, 8vw, 8rem);        /* h1 de página (Degular) */
   --fs-lead: clamp(1.5rem, 2.8vw, 2.5rem);     /* bajada grande (Cormorant) */
   --fs-body: clamp(1rem, 1.35vw, 1.25rem);     /* párrafo de introducción */
   --fs-row: clamp(1rem, 1.25vw, 1.15rem);      /* texto dentro de un renglón */
   --fs-item: clamp(1.5rem, 2.7vw, 2.75rem);    /* título de renglón (Degular) */
   --fs-card: clamp(1.4rem, 2.4vw, 2.25rem);    /* nombre de obra en fichas */
   --fs-small: 0.8rem;                          /* números, etiquetas, filtros */
+
+  /* Interlineado: un valor por tipo de elemento, igual en todas las páginas */
+  --lh-title: 0.98;  /* h1 de página y títulos grandes (Degular) */
+  --lh-item: 1.05;   /* títulos de renglón, preguntas y nombres de obra (Degular) */
+  --lh-lead: 1.1;    /* bajadas y subtítulos grandes (Cormorant) */
+  --lh-text: 1.5;    /* párrafos */
 
   --gutter: clamp(1.25rem, 4vw, 3rem);
   --logo-w: clamp(150px, 22vw, 260px);
@@ -142,24 +167,26 @@ a:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 4px; }
    src/lib/degular.ts cuando las lleve). */
 .page-title {
   margin: 0;
+  text-align: center;
+  text-transform: uppercase;
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--fs-title);
-  line-height: 0.98;
+  line-height: var(--lh-title);
   letter-spacing: -0.015em;
 }
 .page-lead {
   margin: 0;
   font-family: var(--font-detail);
   font-size: var(--fs-lead);
-  line-height: 1.15;
+  line-height: var(--lh-lead);
   color: var(--grey-dark);
 }
 .page-text {
   margin: 0;
   max-width: 46ch;
   font-size: var(--fs-body);
-  line-height: 1.55;
+  line-height: var(--lh-text);
   color: var(--grey-dark);
 }
 

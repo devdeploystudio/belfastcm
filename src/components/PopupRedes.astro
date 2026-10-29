@@ -1,0 +1,421 @@
+---
+// Popup chico y centrado que invita a seguir las redes. Tarjeta rectangular de
+// vidrio esmerilado (gris, translúcida, con poco desenfoque): lo que hay detrás,
+// en la página, se sigue viendo a través. Igual en celular y en desktop. Aparece
+// cada vez que se llega con el scroll al bloque indicado en `target` (por defecto,
+// el "¿Querés avanzar con tu proyecto?"), bajando o subiendo. Se cierra con la ×,
+// con Escape o tocando fuera; sin velo, la página no se oscurece ni se bloquea.
+// La tarjeta flota despacio y, con mouse, cuando el cursor se acerca se deforma
+// como una gota: se desplaza y se estira hacia él (siempre rectangular), con un
+// rebote elástico al soltarse.
+const {
+  target = ".proyecto",
+  etiqueta = "Seguinos",
+  texto = "Seguinos en nuestras redes y mirá cómo avanzan nuestras obras.",
+} = Astro.props;
+
+const redes = [
+  { nombre: "Instagram", href: "https://www.instagram.com/belfast_cm" },
+  { nombre: "LinkedIn", href: "https://www.linkedin.com/company/belfast-cm/" },
+  { nombre: "Facebook", href: "https://www.facebook.com/BelfastCM/" },
+];
+---
+
+<div class="redes" data-redes data-target={target} hidden>
+  <div class="redes__wrap">
+    <div
+      class="redes__card"
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby="redes-etiqueta"
+      aria-describedby="redes-texto"
+      tabindex="-1"
+    >
+      <button class="redes__x" type="button" aria-label="Cerrar" data-redes-cerrar>
+        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+          <path d="M1 1 11 11M11 1 1 11" fill="none" stroke="currentColor" stroke-width="1.3" />
+        </svg>
+      </button>
+      <p class="redes__etiqueta" id="redes-etiqueta">{etiqueta}</p>
+      <p class="redes__texto" id="redes-texto">{texto}</p>
+      <div class="redes__pie">
+        <span class="redes__pie-label">Redes:</span>
+        <ul class="redes__lista">
+          {
+            redes.map((r) => (
+              <li>
+                <a class="redes__link" href={r.href} target="_blank" rel="noopener noreferrer">
+                  <span>{r.nombre}</span>
+                  <svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true">
+                    <path d="M3 11 11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3" />
+                  </svg>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  .redes {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
+    pointer-events: none;
+  }
+  .redes[hidden] { display: none; }
+  /* sin velo: la página queda como siempre y solo la tarjeta recibe clics */
+  .redes.is-open .redes__card { pointer-events: auto; }
+
+  /* Capas separadas para que no se pisen: el contenedor hace la entrada
+     (`transform`) y flota despacio (`translate`); la tarjeta se desplaza hacia el
+     cursor (`translate`, variables --mx / --my) y se deforma como una gota
+     (`transform`, variables que pone el script). */
+  .redes__wrap {
+    position: relative;
+    width: min(100%, 21rem);
+    transform: translateY(14px);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: redes-flota 6.5s ease-in-out infinite alternate;
+  }
+  .redes.is-open .redes__wrap { transform: none; }
+  @keyframes redes-flota {
+    from { translate: 0 -0.35rem; }
+    to { translate: 0.25rem 0.4rem; }
+  }
+
+  /* vidrio esmerilado, rectangular: gris translúcido con poco desenfoque, así lo
+     de abajo se sigue leyendo */
+  .redes__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.5rem;
+    width: 100%;
+    min-height: 20rem;
+    padding: 1.35rem 1.35rem 1.25rem;
+    color: var(--ink);
+    background: rgba(170, 170, 170, 0.34);
+    -webkit-backdrop-filter: blur(9px);
+    backdrop-filter: blur(9px);
+    /* filo de vidrio biselado: el aro de luz lo dibuja ::before; acá, un hilo gris
+       casi invisible por fuera (define el borde sobre el fondo blanco), luz suave
+       adentro arriba a la izquierda y una sombra leve abajo a la derecha */
+    border: 1px solid transparent;
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.1),
+      inset 4px 4px 14px rgba(255, 255, 255, 0.4),
+      inset -6px -6px 16px rgba(0, 0, 0, 0.05),
+      0 30px 80px rgba(0, 0, 0, 0.16);
+    opacity: 0;
+    translate: var(--mx, 0px) var(--my, 0px);
+    /* deformación: estira la tarjeta a lo largo de la dirección del cursor
+       (--ang) y la aplasta un poco de costado */
+    transform: rotate(var(--ang, 0rad)) scale(var(--sa, 1), var(--sb, 1)) rotate(var(--nang, 0rad));
+    transition: opacity 0.5s ease;
+  }
+  .redes.is-open .redes__card { opacity: 1; }
+  .redes__card:focus { outline: none; }
+
+  /* Brillo de burbuja. Variables registradas para que el reflejo se deslice suave
+     (el script mueve --bx / --by con el cursor y --bo según la cercanía). */
+  @property --bx { syntax: "<percentage>"; inherits: false; initial-value: 26%; }
+  @property --by { syntax: "<percentage>"; inherits: false; initial-value: 16%; }
+  @property --bo { syntax: "<number>"; inherits: false; initial-value: 0.4; }
+  /* aro de luz del borde: 1.5px, claro y casi blanco arriba a la izquierda, que
+     se apaga a un gris suave hacia abajo a la derecha y vuelve a aclarar en la
+     esquina; todo en blanco y gris */
+  .redes__card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 0;
+    padding: 1.5px;
+    pointer-events: none;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.98),
+      rgba(255, 255, 255, 0.5) 30%,
+      rgba(185, 185, 185, 0.6) 62%,
+      rgba(255, 255, 255, 0.9)
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  }
+  /* reflejos: el brillo que sigue al cursor, una luz blanda arriba a la izquierda
+     y la gotita de luz típica de una burbuja */
+  .redes__card::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at var(--bx) var(--by), rgba(255, 255, 255, calc(0.9 * var(--bo))), transparent 58%),
+      radial-gradient(120% 70% at 8% 0%, rgba(255, 255, 255, 0.24), transparent 62%),
+      radial-gradient(ellipse 15% 6% at 15% 9%, rgba(255, 255, 255, 0.95), transparent 100%);
+    transition: --bx 0.45s ease-out, --by 0.45s ease-out, --bo 0.45s ease-out;
+  }
+  /* el contenido queda por encima de los brillos */
+  .redes__card > * { position: relative; z-index: 1; }
+  .redes__card > .redes__x { position: absolute; z-index: 2; }
+
+  .redes__etiqueta,
+  .redes__pie-label {
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .redes__texto {
+    margin: 0 0 0 36%;
+    font-family: var(--font-detail);
+    font-size: 1.35rem;
+    line-height: var(--lh-lead);
+    text-wrap: balance;
+  }
+  .redes__pie {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+  }
+  .redes__lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .redes__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding-bottom: 0.15rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid var(--ink);
+  }
+  .redes__link svg { transition: transform 0.25s ease; }
+  .redes__link:hover svg,
+  .redes__link:focus-visible svg { transform: translate(2px, -2px); }
+
+  .redes__x {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    color: var(--ink);
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  .redes__x:focus-visible,
+  .redes__link:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+  @media (max-width: 699px) {
+    .redes__card { min-height: 18rem; }
+    .redes__texto { margin-left: 22%; font-size: 1.25rem; }
+  }
+  /* sin desenfoque (navegadores viejos) el vidrio se vuelve más opaco */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .redes__card { background: rgba(250, 250, 250, 0.92); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .redes__card { transition: none; }
+    .redes__card::after { transition: none; }
+    .redes__wrap { animation: none; transition: none; transform: none; }
+  }
+</style>
+
+<script>
+  const popup = document.querySelector<HTMLElement>("[data-redes]");
+  const bloque = popup ? document.querySelector(popup.dataset.target || ".proyecto") : null;
+
+  if (popup && bloque) {
+    const card = popup.querySelector<HTMLElement>(".redes__card")!;
+    let previo: HTMLElement | null = null;
+    let abierto = false;
+    let espera = 0;
+    let ocultar = 0;
+
+    // ----- con mouse, la tarjeta se deforma como una gota cuando el cursor se
+    // acerca: se desplaza y se estira hacia él (siempre rectangular, sin
+    // redondear esquinas). Un resorte con rebote la lleva y la devuelve a su forma
+    // cuando el cursor se aleja. Sin mouse o con movimiento reducido no se deforma -----
+    const hayMouse = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const calmo = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mover = hayMouse.matches && !calmo.matches;
+    const MAX = 22; // desplazamiento máximo hacia el cursor, en px
+    const ESTIRA = 0.09; // estiramiento máximo a lo largo de esa dirección (9 %)
+    const ALCANCE = 340; // a qué distancia de la tarjeta empieza a notar el cursor
+    const RIGIDEZ = 0.16; // fuerza del resorte
+    const FRENO = 0.74; // amortiguación (menos = más rebote)
+    // estado del resorte: posición, velocidad y destino, en unidades -1..1
+    let x = 0;
+    let y = 0;
+    let vx = 0;
+    let vy = 0;
+    let tx = 0;
+    let ty = 0;
+    let raf = 0;
+    // la posición de referencia es la del contenedor (no la de la tarjeta, que se
+    // mueve), así el cálculo no se realimenta
+    const marco = card.parentElement as HTMLElement;
+
+    function pintar() {
+      const m = Math.hypot(x, y);
+      if (m < 0.002) {
+        // en reposo: vuelve a ser la tarjeta de siempre
+        for (const v of ["--mx", "--my", "--ang", "--nang", "--sa", "--sb"]) card.style.removeProperty(v);
+        return;
+      }
+      const ang = Math.atan2(y, x);
+      const s = ESTIRA * m;
+      card.style.setProperty("--mx", `${(x * MAX).toFixed(1)}px`);
+      card.style.setProperty("--my", `${(y * MAX).toFixed(1)}px`);
+      card.style.setProperty("--ang", `${ang.toFixed(3)}rad`);
+      card.style.setProperty("--nang", `${(-ang).toFixed(3)}rad`);
+      card.style.setProperty("--sa", (1 + s).toFixed(4));
+      card.style.setProperty("--sb", (1 - s * 0.55).toFixed(4));
+    }
+
+    function cuadro() {
+      vx = (vx + (tx - x) * RIGIDEZ) * FRENO;
+      vy = (vy + (ty - y) * RIGIDEZ) * FRENO;
+      x += vx;
+      y += vy;
+      const resto = Math.abs(vx) + Math.abs(vy) + Math.abs(tx - x) + Math.abs(ty - y);
+      if (resto < 0.003) {
+        x = tx;
+        y = ty;
+        vx = vy = 0;
+      }
+      pintar();
+      raf = resto >= 0.003 ? requestAnimationFrame(cuadro) : 0;
+    }
+    const animar = () => {
+      if (!raf) raf = requestAnimationFrame(cuadro);
+    };
+    function reposo() {
+      tx = 0;
+      ty = 0;
+      animar();
+      // el reflejo vuelve a su lugar de reposo
+      for (const v of ["--bx", "--by", "--bo"]) card.style.removeProperty(v);
+    }
+    function puntero(e: PointerEvent) {
+      if (e.pointerType !== "mouse") return;
+      const r = marco.getBoundingClientRect();
+      const px = e.clientX - (r.left + r.width / 2);
+      const py = e.clientY - (r.top + r.height / 2);
+      // distancia del cursor al borde de la tarjeta (0 si está encima) y cuánto
+      // influye: nada más allá del alcance, todo cuando está encima
+      const dist = Math.hypot(Math.max(0, Math.abs(px) - r.width / 2), Math.max(0, Math.abs(py) - r.height / 2));
+      const influye = Math.min(1, Math.max(0, 1 - dist / ALCANCE));
+      const largo = Math.hypot(px, py) || 1;
+      // hacia el cursor; la distancia al centro se comprime para que no se dispare
+      const fuerza = Math.min(1, largo / 260) * influye;
+      tx = (px / largo) * fuerza;
+      ty = (py / largo) * fuerza;
+      animar();
+      // el reflejo de luz sigue al cursor sobre el vidrio y brilla más cuanto más
+      // cerca está (la transición de las variables lo desliza suave)
+      const rc = card.getBoundingClientRect();
+      const bx = Math.min(100, Math.max(0, ((e.clientX - rc.left) / rc.width) * 100));
+      const by = Math.min(100, Math.max(0, ((e.clientY - rc.top) / rc.height) * 100));
+      card.style.setProperty("--bx", `${bx.toFixed(1)}%`);
+      card.style.setProperty("--by", `${by.toFixed(1)}%`);
+      card.style.setProperty("--bo", (0.3 + 0.7 * influye).toFixed(2));
+    }
+    const seguirMouse = () => {
+      if (!mover) return;
+      document.addEventListener("pointermove", puntero);
+      document.documentElement.addEventListener("pointerleave", reposo);
+    };
+    const soltarMouse = () => {
+      document.removeEventListener("pointermove", puntero);
+      document.documentElement.removeEventListener("pointerleave", reposo);
+      reposo();
+    };
+
+    const abrir = () => {
+      if (abierto) return;
+      abierto = true;
+      window.clearTimeout(ocultar);
+      previo = document.activeElement as HTMLElement | null;
+      popup.hidden = false;
+      // un cuadro después de mostrarlo, para que la transición corra
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          popup.classList.add("is-open");
+          card.focus({ preventScroll: true });
+        }),
+      );
+      document.addEventListener("keydown", teclas);
+      seguirMouse();
+      // en el siguiente ciclo, para que el clic que lo pudo abrir no lo cierre
+      window.setTimeout(() => document.addEventListener("click", fuera), 0);
+    };
+
+    const cerrar = () => {
+      if (!abierto) return;
+      abierto = false;
+      popup.classList.remove("is-open");
+      document.removeEventListener("keydown", teclas);
+      document.removeEventListener("click", fuera);
+      soltarMouse();
+      ocultar = window.setTimeout(() => {
+        popup.hidden = true;
+      }, 600);
+      previo?.focus?.({ preventScroll: true });
+    };
+
+    // no bloquea la página: Escape o tocar fuera de la tarjeta lo cierra (el
+    // toque sigue su camino y actúa sobre lo que haya debajo)
+    function teclas(e: KeyboardEvent) {
+      if (e.key === "Escape") cerrar();
+    }
+    function fuera(e: MouseEvent) {
+      if (!card.contains(e.target as Node)) cerrar();
+    }
+
+    popup.querySelectorAll("[data-redes-cerrar]").forEach((el) => el.addEventListener("click", cerrar));
+
+    // Aparece cada vez que se llega al bloque (bajando o subiendo), cuando ya está
+    // bien adentro de la pantalla y el visitante se queda un momento (no al pasar
+    // de largo). Si lo cierra, no vuelve hasta que salga del bloque y regrese. Al
+    // salir del bloque se guarda solo. Dos umbrales (entrar >= 45%, salir < 15%)
+    // para que no titile en el borde.
+    let dentro = false;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          const ahora = e.intersectionRatio >= 0.45 ? true : e.intersectionRatio < 0.15 ? false : dentro;
+          if (ahora === dentro) return;
+          dentro = ahora;
+          window.clearTimeout(espera);
+          if (dentro) {
+            espera = window.setTimeout(abrir, 900);
+          } else {
+            cerrar();
+          }
+        });
+      },
+      { threshold: [0, 0.15, 0.45] },
+    );
+    io.observe(bloque);
+  }
+</script>

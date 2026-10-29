@@ -12,7 +12,7 @@ import { degular } from "../lib/degular";
   <main class="notfound">
     <!-- Degular bold como el resto de los títulos; la tilde va dibujada aparte
          (la demo no la trae) y el nombre accesible en aria-label -->
-    <h1 class="notfound__title page-title" aria-label="Esta página no existe">
+    <h1 class="notfound__title page-title caps" aria-label="Esta página no existe">
       <span aria-hidden="true" set:html={degular("Esta página no existe")} />
     </h1>
     <!-- se tipea solo, con la flecha, como todos los enlaces (type-links.js) -->

@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import Base from "../layouts/Base.astro";
+import Destello from "../components/Destello.astro";
 import { fotos } from "../data/obras.js";
 
 // Dónde se envía el formulario: URL de un servicio que reciba un POST con JSON
@@ -24,14 +25,14 @@ const foto = fotos[2];
   path="/contacto"
 >
   <main class="contacto">
+    <Destello />
     <!-- Primera pantalla: el título con su bajada -->
     <section class="ct-hero">
     <header class="ct-head">
-      <h1 class="ct-title page-title" data-reveal>Contanos tu proyecto</h1>
-      <!-- flecha de la referencia: decorativa -->
-      <svg class="ct-arrow" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-        <path d="M14 14 86 86M86 24V86H24" fill="none" stroke="currentColor" stroke-width="9" />
-      </svg>
+      <h1 class="ct-title page-title" data-reveal>
+        <span class="ct-title__l">Contanos</span>
+        <span class="ct-title__l">tu proyecto</span>
+      </h1>
     </header>
 
     <div class="ct-hero__text">
@@ -162,26 +163,24 @@ const foto = fotos[2];
     gap: 2rem;
     min-height: 100svh;
     padding: clamp(7rem, 16vw, 11rem) 0 clamp(3rem, 8vw, 6rem);
+    text-align: left;
   }
   .ct-head { position: relative; }
-  .ct-title { max-width: 9em; text-wrap: balance; }
-  /* flecha grande arriba a la derecha, de la altura del título */
-  .ct-arrow {
-    position: absolute;
-    top: 0.1em;
-    right: 0;
-    width: clamp(3rem, 9vw, 9rem);
-    height: auto;
-    color: var(--ink);
-    font-size: var(--fs-title);
-  }
-  @media (max-width: 699px) { .ct-arrow { display: none; } }
+  /* Contacto va alineada a la izquierda (a diferencia de los demás títulos) y el
+     título siempre en dos renglones: CONTANOS / TU PROYECTO */
+  .ct-title { text-align: left; }
+  .ct-title__l { display: block; white-space: nowrap; }
   /* en pantallas chicas la portada no ocupa la pantalla con un hueco entre el
      título y la bajada: van seguidos */
   @media (max-width: 999px) {
     .ct-hero { min-height: auto; justify-content: flex-start; gap: 2rem; padding-bottom: 3.5rem; }
   }
-  .ct-hero__text { display: flex; flex-direction: column; gap: clamp(1rem, 2vw, 1.5rem); }
+  .ct-hero__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(1rem, 2vw, 1.5rem);
+  }
   .ct-lead { max-width: 22em; }
 
   /* ---------- Segunda pantalla: foto + formulario ---------- */
@@ -326,7 +325,7 @@ const foto = fotos[2];
     padding: 0.9rem 1rem;
     max-width: 46ch;
     font-size: 0.95rem;
-    line-height: 1.5;
+    line-height: var(--lh-text);
     border: 1px solid var(--ink);
   }
 

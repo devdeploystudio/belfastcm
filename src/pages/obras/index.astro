@@ -22,7 +22,7 @@ const filtros = [
   <main class="obras-page">
     <header class="obras-page__head">
       <h1 class="obras-page__title page-title" data-reveal>Nuestras obras</h1>
-      <p class="obras-page__kicker page-lead" data-reveal>(Una selección de obras terminadas y en construcción)</p>
+      <p class="obras-page__kicker page-lead" data-reveal>Una selección de obras terminadas y en construcción</p>
       <p class="obras-page__lead page-text" data-reveal>
         Conocé los espacios, los detalles y el trabajo que hay detrás de cada proyecto.
       </p>
@@ -80,7 +80,7 @@ const filtros = [
     <p class="obras-empty" id="obras-empty" hidden>No hay obras con este estado.</p>
   </main>
 
-  <ProyectoCta />
+  <ProyectoCta line={false} />
 </Base>
 
 <style is:global>
@@ -92,7 +92,8 @@ const filtros = [
   .obras-page__head {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
     gap: clamp(1rem, 2vw, 1.5rem);
   }
   /* separación entre los filtros y las fichas (en el recorrido horizontal la
@@ -102,6 +103,7 @@ const filtros = [
   .obras-filter {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.5rem 1.75rem;
     margin-top: clamp(0.5rem, 2vw, 1.5rem);
   }
@@ -178,7 +180,7 @@ const filtros = [
     font-family: var(--font-display);
     font-weight: 700;
     font-size: var(--fs-card);
-    line-height: 1.05;
+    line-height: var(--lh-item);
   }
   .obra-card__info {
     grid-column: 2;

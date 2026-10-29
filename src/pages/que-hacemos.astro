@@ -1,6 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
 import ProyectoCta from "../components/ProyectoCta.astro";
+import Destello from "../components/Destello.astro";
+import PopupRedes from "../components/PopupRedes.astro";
 import { degular } from "../lib/degular";
 
 const servicios = [
@@ -53,13 +55,14 @@ const servicios = [
   path="/que-hacemos"
 >
   <main class="hacemos-page">
+    <Destello />
     <!-- en celular la cabecera es una pantalla estática: queda pegada un tramo
          antes de pasar a los servicios (solo CSS, ver .hacemos-hero) -->
     <div class="hacemos-hero">
     <header class="hacemos-head">
       <!-- Degular con la tilde dibujada aparte (la demo no la trae); el nombre
            accesible va en aria-label para que se lea bien -->
-      <h1 class="hacemos-title page-title" aria-label="Qué hacemos" data-reveal>
+      <h1 class="hacemos-title page-title caps" aria-label="Qué hacemos" data-reveal>
         <span aria-hidden="true" set:html={degular("Qué hacemos")} />
       </h1>
       <p class="hacemos-lead page-lead" data-reveal>Cada proyecto necesita una forma de trabajo propia.</p>
@@ -114,11 +117,14 @@ const servicios = [
   </main>
 
   <ProyectoCta
-    title="¿Ya tenés un proyecto de arquitectura?"
+    title="¿Querés avanzar con tu proyecto?"
     text="Nos integramos como equipo constructor y trabajamos junto a tu arquitecto o estudio. Coordinamos las decisiones técnicas y la ejecución para llevar a la realidad el diseño que desarrollaron."
     label="Conversemos sobre tu obra"
     line={false}
   />
+
+  <!-- invita a seguir las redes cada vez que se llega al bloque de arriba -->
+  <PopupRedes target=".proyecto" />
 </Base>
 
 <style is:global>
@@ -130,7 +136,8 @@ const servicios = [
   .hacemos-head {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
     gap: clamp(1rem, 2vw, 1.5rem);
     margin-bottom: clamp(3.5rem, 8vw, 7rem);
   }
@@ -191,7 +198,7 @@ const servicios = [
     font-family: var(--font-display);
     font-weight: 700;
     font-size: var(--fs-item);
-    line-height: 1.08;
+    line-height: var(--lh-item);
     letter-spacing: -0.005em;
     text-transform: uppercase;
     text-wrap: balance;
@@ -211,7 +218,7 @@ const servicios = [
     margin: 0;
     max-width: 46ch;
     font-size: var(--fs-row);
-    line-height: 1.6;
+    line-height: var(--lh-text);
     color: var(--grey-dark);
   }
   .svc__tags {

@@ -7,13 +7,39 @@ const {
   href = "/contacto",
   line = true,
 } = Astro.props;
+
+// la palabra "proyecto" del título va en itálica + bold, en todas las páginas, y
+// lo que sigue ("en mente?", "de arquitectura?") baja al renglón de abajo. Si
+// después de "proyecto" solo viene puntuación ("…con tu proyecto?") no hay salto,
+// para que el "?" no quede solo. Se calcula acá y no en el template porque Astro
+// se confunde con las llaves de la expresión regular.
+const hayTexto = (t = "") => /[A-Za-zÀ-ÿ0-9]/.test(t);
+const crudas = String(title).split(/(proyecto)/i);
+const partes = crudas.map((t, i) => ({
+  t,
+  resaltada: /^proyecto$/i.test(t),
+  salto: /^proyecto$/i.test(t) && hayTexto(crudas[i + 1]),
+}));
 ---
 
 <section class:list={["proyecto", { "proyecto--sin-linea": !line }]} aria-labelledby="proyecto-title">
   <div class="proyecto__inner">
     <!-- Cormorant y no Degular: el título lleva ¿ y tilde, que la demo de
          Degular no trae -->
-    <h2 class="proyecto__title" id="proyecto-title" data-reveal>{title}</h2>
+    <h2 class="proyecto__title" id="proyecto-title" data-reveal>
+      {
+        partes.map((p) =>
+          p.resaltada ? (
+            <>
+              <em class="proyecto__em">{p.t}</em>
+              {p.salto && <br />}
+            </>
+          ) : (
+            p.t
+          ),
+        )
+      }
+    </h2>
     <p class="proyecto__text" data-reveal>{text}</p>
     <a class="link-arrow proyecto__cta" href={href} data-reveal>
       <span>{label}</span>
@@ -43,15 +69,22 @@ const {
     font-family: var(--font-detail);
     font-weight: 400;
     font-size: clamp(2.5rem, 7vw, 6.5rem);
-    line-height: 1;
+    line-height: var(--lh-lead);
     letter-spacing: -0.015em;
     text-wrap: balance;
+  }
+  /* itálica + bold reales (archivo propio), no inclinadas ni engrosadas por el
+     navegador */
+  .proyecto__title { font-synthesis: none; }
+  .proyecto__em {
+    font-style: italic;
+    font-weight: 700;
   }
   .proyecto__text {
     margin: 0;
     max-width: 46ch;
     font-size: clamp(1rem, 1.35vw, 1.25rem);
-    line-height: 1.55;
+    line-height: var(--lh-text);
     color: var(--grey-dark);
   }
 </style>

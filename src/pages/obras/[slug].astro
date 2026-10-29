@@ -127,6 +127,8 @@ const datos = [
   .obra-page__head {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
     gap: 0.75rem;
     margin-bottom: clamp(2.5rem, 6vw, 5rem);
   }
@@ -151,7 +153,7 @@ const datos = [
     margin: 0;
     max-width: 46ch;
     font-size: var(--fs-body);
-    line-height: 1.55;
+    line-height: var(--lh-text);
     color: var(--grey-dark);
   }
   .obra-datos {
@@ -234,7 +236,7 @@ const datos = [
     font-family: var(--font-display);
     font-weight: 700;
     font-size: var(--fs-card);
-    line-height: 1.05;
+    line-height: var(--lh-item);
     border-bottom: 1px solid transparent;
     transition: border-color 0.2s ease;
   }

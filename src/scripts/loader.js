@@ -138,14 +138,14 @@ async function loadPieces() {
   return Array.from(svg.querySelectorAll("path"));
 }
 
-// El inicio siempre corre el loader completo. En las páginas internas corre el
-// completo la primera vez que se entra al sitio (en esa pestaña) y después una
-// versión rápida del mismo recorrido: sin la grilla de fondo y con el trazo,
-// el relleno y el viaje al header acelerados (~4 s contra ~9 s).
+// Corre el loader completo la primera vez que se entra al sitio (en esa
+// pestaña), por el inicio o por cualquier página. Después, en todas las páginas
+// (el inicio incluido), una versión rápida: sin la grilla de fondo y sin trazar
+// el contorno negro (el isotipo aparece directo en amarillo). El desarme hacia
+// el wordmark y el traspaso al header van a la velocidad original (~3 s contra
+// ~9 s).
 const SEEN_KEY = "belfast-loader-visto";
-const IS_HOME = window.location.pathname === "/";
 const QUICK = (() => {
-  if (IS_HOME) return false;
   try {
     return sessionStorage.getItem(SEEN_KEY) === "1";
   } catch {
@@ -159,12 +159,7 @@ const markSeen = () => {
     /* sin sessionStorage (modo privado, etc.): siempre corre el completo */
   }
 };
-const K = QUICK ? { fill: 0.7, move: 0.85 } : { fill: 1, move: 1 };
-// velocidad de trazo extra por pieza en la versión rápida: las cuatro chicas un
-// poco más rápido y la última (la más larga) más despacio, que si no pasaba
-// demasiado rápido. En el loader completo todas valen 1.
-const QUICK_SPEED = QUICK ? [3, 3, 3, 3, 1.7] : [1, 1, 1, 1, 1];
-
+const K = { fill: 1, move: 1 };
 const PIECE_SPEED = [0.9, 0.9, 0.9, 0.9, 1.82];
 const PIECE_FILL = [900, 900, 900, 900, 450];
 const PIECE_FILL_AT = [1, 1, 1, 1, 0.85];
@@ -190,13 +185,31 @@ function convergePieces(paths) {
   });
 }
 
+// versión rápida: sin trazar el contorno, las piezas aparecen ya amarillas (de
+// izquierda a derecha, con un fundido corto)
+function fadeInPieces(paths) {
+  paths.forEach((p) => {
+    p.style.transition = "none";
+    p.style.strokeDashoffset = "0";
+    p.style.fill = "#e8d300";
+    p.style.stroke = "#e8d300";
+    p.style.opacity = "0";
+  });
+  void logoWrap.offsetWidth;
+  paths.forEach((p, i) => {
+    p.style.transition = `opacity 380ms ease ${i * 60}ms`;
+    p.style.opacity = "1";
+  });
+  return sleep(380 + (paths.length - 1) * 60 + 120);
+}
+
 function drawPieces(paths) {
   const lens = paths.map((p) => p.getTotalLength());
   let start = 0;
   let lastDrawEnd = 0;
   return new Promise((resolve) => {
     paths.forEach((p, i) => {
-      const draw = lens[i] / (PIECE_SPEED[i] * QUICK_SPEED[i]);
+      const draw = lens[i] / PIECE_SPEED[i];
       const fillMs = Math.round(PIECE_FILL[i] * K.fill);
       p.style.transition = `stroke-dashoffset ${Math.round(draw)}ms linear, fill ${fillMs}ms ease, stroke ${fillMs}ms ease`;
       setTimeout(() => p.classList.add("drawn"), start);
@@ -258,18 +271,18 @@ async function run() {
   }
 
   const paths = await loadPieces();
-  await drawPieces(paths);
-
-  if (!QUICK) blueprintSvg.classList.add("is-faded");
-  await sleep(600 * K.move);
+  if (QUICK) {
+    await fadeInPieces(paths);
+  } else {
+    await drawPieces(paths);
+    blueprintSvg.classList.add("is-faded");
+  }
+  // sin el trazo no hace falta la pausa larga antes del desarme
+  await sleep(QUICK ? 150 : 600 * K.move);
 
   // 3) las piezas viajan al wordmark y todo sube hasta el header
   logoWordmark.classList.add("revealed");
   logoWrap.classList.add("is-wordmark-only");
-  if (QUICK) {
-    logoWordmark.style.transitionDelay = "0s";
-    logoWrap.style.transitionDuration = `${1.1 * K.move}s`;
-  }
   convergePieces(paths);
   dockToHeaderLogo();
 
@@ -281,7 +294,6 @@ async function run() {
   root.classList.add("is-docked");
   logoWordmark.style.transition = `opacity ${0.6 * K.move}s ease`;
   logoWordmark.style.opacity = "0";
-  if (QUICK) loader.style.transitionDuration = `${0.6 * K.move}s`;
   loader.classList.add("is-transparent");
 
   await sleep(900 * K.move);

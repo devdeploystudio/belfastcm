@@ -56,9 +56,10 @@ const pilares = [
     <header class="nos-head">
       <!-- Degular con tildes dibujadas aparte (la demo no las trae); el nombre
            accesible va en aria-label -->
-      <h1 class="nos-title page-title" aria-label="Quiénes somos" data-reveal>
+      <h1 class="nos-title page-title caps" aria-label="Quiénes somos" data-reveal>
         <span aria-hidden="true" set:html={degular("Quiénes somos")} />
       </h1>
+      <p class="nos-sub page-lead" data-reveal>Conocé cómo trabajamos</p>
     </header>
 
     <!-- Bloque fijo: el texto queda pegado y entra por partes al scrollear (ver
@@ -179,12 +180,28 @@ const pilares = [
   .nosotros .page-text {
     max-width: 46ch;
     margin-inline: auto;
-    line-height: 1.4; /* interlineado chico */
   }
-  .nosotros .page-lead { line-height: 1.1; }
 
-  .nos-head { margin-bottom: clamp(3rem, 8vw, 7rem); }
+  /* portada del alto de la pantalla: el título arriba y la bajada abajo, como en
+     Cómo trabajamos y Qué hacemos */
+  .nos-head {
+    position: relative;
+    min-height: calc(100svh - clamp(7rem, 16vw, 11rem));
+    padding-bottom: clamp(3rem, 8vw, 6rem);
+  }
   .nos-title { text-wrap: balance; }
+  .nos-sub {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: clamp(2.5rem, 7vw, 5rem);
+  }
+  /* en celular la portada no deja un hueco en el medio: la bajada va justo
+     debajo del título */
+  @media (max-width: 699px) {
+    .nos-head { min-height: auto; padding-bottom: 0; margin-bottom: clamp(3rem, 8vw, 5rem); }
+    .nos-sub { position: static; margin-top: 2rem; }
+  }
 
   /* ---------- Somos Belfast ---------- */
   .somos {
@@ -199,11 +216,13 @@ const pilares = [
     font-family: var(--font-display);
     font-weight: 700;
     font-size: var(--fs-item);
-    line-height: 1.08;
+    line-height: var(--lh-item);
     letter-spacing: -0.005em;
     text-wrap: balance;
   }
   .somos__lead { max-width: 24em; text-wrap: balance; }
+  /* un poco más de aire entre la bajada y "Tenemos más de 30 años" */
+  .somos__fact { margin-top: clamp(1rem, 2.6vw, 2.25rem); }
   .somos__text {
     display: flex;
     flex-direction: column;
@@ -227,7 +246,7 @@ const pilares = [
     font-family: var(--font-display);
     font-weight: 700;
     font-size: var(--fs-title);
-    line-height: 0.98;
+    line-height: var(--lh-title);
     letter-spacing: -0.015em;
   }
   .pilar__text { max-width: 40ch; }
