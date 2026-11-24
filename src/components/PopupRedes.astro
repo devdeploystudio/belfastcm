@@ -1,17 +1,23 @@
 ---
-// Popup chico y centrado que invita a seguir las redes. Tarjeta rectangular de
-// vidrio esmerilado (gris, translúcida, con poco desenfoque): lo que hay detrás,
-// en la página, se sigue viendo a través. Igual en celular y en desktop. Aparece
-// cada vez que se llega con el scroll al bloque indicado en `target` (por defecto,
-// el "¿Querés avanzar con tu proyecto?"), bajando o subiendo. Se cierra con la ×,
-// con Escape o tocando fuera; sin velo, la página no se oscurece ni se bloquea.
-// La tarjeta flota despacio y, con mouse, cuando el cursor se acerca se deforma
-// como una gota: se desplaza y se estira hacia él (siempre rectangular), con un
-// rebote elástico al soltarse.
+// Popup que invita a seguir las redes. Tarjeta rectangular de vidrio esmerilado
+// (gris, translúcida, con poco desenfoque): lo que hay detrás se sigue viendo a
+// través. Aparece cada vez que se llega con el scroll al bloque indicado en
+// `target` (por defecto, el "¿Querés avanzar con tu proyecto?"), bajando o
+// subiendo. Se cierra con la ×, con Escape o tocando fuera; sin velo, la página no
+// se oscurece ni se bloquea.
+// En desktop va a la derecha, como el tercer escalón de una escalerita: dos fotos
+// de obras superpuestas (en blanco y negro) y, bajando y corrido, el popup, que
+// desenfoca la segunda foto. En celular y tablet angosta va solo, centrado.
+// Con mouse, el brillo del vidrio sigue al cursor. La composición flota despacio.
+import { Image } from "astro:assets";
+import { fotos } from "../data/obras.js";
+
 const {
   target = ".proyecto",
   etiqueta = "Seguinos",
   texto = "Seguinos en nuestras redes y mirá cómo avanzan nuestras obras.",
+  fotoA = fotos[1],
+  fotoB = fotos[4],
 } = Astro.props;
 
 const redes = [
@@ -23,6 +29,13 @@ const redes = [
 
 <div class="redes" data-redes data-target={target} hidden>
   <div class="redes__wrap">
+    <!-- los dos primeros escalones (solo desktop) -->
+    <div class="redes__foto redes__foto--a" aria-hidden="true">
+      <Image src={fotoA.src} alt="" widths={[320, 480, 640]} sizes="224px" format="webp" quality={85} loading="eager" fetchpriority="low" decoding="async" />
+    </div>
+    <div class="redes__foto redes__foto--b" aria-hidden="true">
+      <Image src={fotoB.src} alt="" widths={[320, 480, 640]} sizes="224px" format="webp" quality={85} loading="eager" fetchpriority="low" decoding="async" />
+    </div>
     <div
       class="redes__card"
       role="dialog"
@@ -73,10 +86,7 @@ const redes = [
   /* sin velo: la página queda como siempre y solo la tarjeta recibe clics */
   .redes.is-open .redes__card { pointer-events: auto; }
 
-  /* Capas separadas para que no se pisen: el contenedor hace la entrada
-     (`transform`) y flota despacio (`translate`); la tarjeta se desplaza hacia el
-     cursor (`translate`, variables --mx / --my) y se deforma como una gota
-     (`transform`, variables que pone el script). */
+  /* El contenedor hace la entrada (`transform`) y flota despacio (`translate`). */
   .redes__wrap {
     position: relative;
     width: min(100%, 21rem);
@@ -115,10 +125,6 @@ const redes = [
       inset -6px -6px 16px rgba(0, 0, 0, 0.05),
       0 30px 80px rgba(0, 0, 0, 0.16);
     opacity: 0;
-    translate: var(--mx, 0px) var(--my, 0px);
-    /* deformación: estira la tarjeta a lo largo de la dirección del cursor
-       (--ang) y la aplasta un poco de costado */
-    transform: rotate(var(--ang, 0rad)) scale(var(--sa, 1), var(--sb, 1)) rotate(var(--nang, 0rad));
     transition: opacity 0.5s ease;
   }
   .redes.is-open .redes__card { opacity: 1; }
@@ -225,9 +231,88 @@ const redes = [
   .redes__x:focus-visible,
   .redes__link:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
+  /* fotos de la escalerita: ocultas hasta que haya lugar (desktop) */
+  .redes__foto { display: none; }
+
   @media (max-width: 699px) {
     .redes__card { min-height: 18rem; }
     .redes__texto { margin-left: 22%; font-size: 1.25rem; }
+  }
+
+  /* ---------- Desktop: escalerita a la derecha ----------
+     Tres escalones que bajan hacia la derecha y se pisan: foto A, foto B y el
+     popup (el tercero), que desenfoca la parte de la foto B que cubre. */
+  @media (min-width: 900px) {
+    .redes {
+      place-items: center end;
+      padding: 1.25rem clamp(1.5rem, 6vw, 6rem) 1.25rem 1.25rem;
+    }
+    .redes__wrap {
+      width: 28rem;
+      height: 30rem;
+    }
+    .redes__card {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 21rem;
+      transition: opacity 0.5s ease 0.25s;
+    }
+    .redes__foto {
+      position: absolute;
+      display: block;
+      width: 14rem;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      background: var(--ink);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 24px 60px rgba(0, 0, 0, 0.18);
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.6s ease var(--d, 0s), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+    }
+    .redes__foto--a { left: 0; top: 0; }
+    .redes__foto--b { left: 3.5rem; top: 5rem; --d: 0.12s; }
+    .redes.is-open .redes__foto {
+      opacity: 1;
+      transform: none;
+    }
+    .redes__foto img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: var(--foto-bn);
+      transition: filter 0.45s ease;
+    }
+  }
+
+  /* Con mouse, cada escalón "sube" al pasarle por encima (la propiedad
+     `translate` tiene su propia transición, sin la demora de la entrada) y las
+     fotos pasan a color. Solo con mouse real: en touch el :hover queda pegado. */
+  @media (min-width: 900px) and (hover: hover) and (pointer: fine) {
+    .redes.is-open .redes__foto { pointer-events: auto; }
+    .redes__foto,
+    .redes__card {
+      translate: 0 0;
+      transition-property: opacity, transform, translate, box-shadow;
+    }
+    .redes__foto { transition-duration: 0.6s, 0.8s, 0.4s, 0.4s; transition-delay: var(--d, 0s), var(--d, 0s), 0s, 0s; }
+    .redes__card { transition-duration: 0.5s, 0.5s, 0.4s, 0.4s; transition-delay: 0.25s, 0s, 0s, 0s; }
+    .redes__foto,
+    .redes__card { transition-timing-function: ease, cubic-bezier(0.22, 1, 0.36, 1), cubic-bezier(0.22, 1, 0.36, 1), ease; }
+    .redes.is-open .redes__foto:hover {
+      translate: 0 -14px;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 34px 70px rgba(0, 0, 0, 0.26);
+    }
+    .redes.is-open .redes__foto:hover img { filter: var(--foto-color); }
+    .redes.is-open .redes__card:hover {
+      translate: 0 -10px;
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.1),
+        inset 4px 4px 14px rgba(255, 255, 255, 0.4),
+        inset -6px -6px 16px rgba(0, 0, 0, 0.05),
+        0 40px 90px rgba(0, 0, 0, 0.22);
+    }
   }
   /* sin desenfoque (navegadores viejos) el vidrio se vuelve más opaco */
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -236,6 +321,7 @@ const redes = [
   @media (prefers-reduced-motion: reduce) {
     .redes__card { transition: none; }
     .redes__card::after { transition: none; }
+    .redes__foto { transition: none; transform: none; }
     .redes__wrap { animation: none; transition: none; transform: none; }
   }
 </style>
@@ -251,97 +337,31 @@ const redes = [
     let espera = 0;
     let ocultar = 0;
 
-    // ----- con mouse, la tarjeta se deforma como una gota cuando el cursor se
-    // acerca: se desplaza y se estira hacia él (siempre rectangular, sin
-    // redondear esquinas). Un resorte con rebote la lleva y la devuelve a su forma
-    // cuando el cursor se aleja. Sin mouse o con movimiento reducido no se deforma -----
+    // ----- con mouse, el brillo del vidrio sigue al cursor y se enciende más cuanto
+    // más cerca está. Sin mouse o con movimiento reducido queda en su lugar -----
     const hayMouse = window.matchMedia("(hover: hover) and (pointer: fine)");
     const calmo = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const mover = hayMouse.matches && !calmo.matches;
-    const MAX = 22; // desplazamiento máximo hacia el cursor, en px
-    const ESTIRA = 0.09; // estiramiento máximo a lo largo de esa dirección (9 %)
+    const seguir = hayMouse.matches && !calmo.matches;
     const ALCANCE = 340; // a qué distancia de la tarjeta empieza a notar el cursor
-    const RIGIDEZ = 0.16; // fuerza del resorte
-    const FRENO = 0.74; // amortiguación (menos = más rebote)
-    // estado del resorte: posición, velocidad y destino, en unidades -1..1
-    let x = 0;
-    let y = 0;
-    let vx = 0;
-    let vy = 0;
-    let tx = 0;
-    let ty = 0;
-    let raf = 0;
-    // la posición de referencia es la del contenedor (no la de la tarjeta, que se
-    // mueve), así el cálculo no se realimenta
-    const marco = card.parentElement as HTMLElement;
 
-    function pintar() {
-      const m = Math.hypot(x, y);
-      if (m < 0.002) {
-        // en reposo: vuelve a ser la tarjeta de siempre
-        for (const v of ["--mx", "--my", "--ang", "--nang", "--sa", "--sb"]) card.style.removeProperty(v);
-        return;
-      }
-      const ang = Math.atan2(y, x);
-      const s = ESTIRA * m;
-      card.style.setProperty("--mx", `${(x * MAX).toFixed(1)}px`);
-      card.style.setProperty("--my", `${(y * MAX).toFixed(1)}px`);
-      card.style.setProperty("--ang", `${ang.toFixed(3)}rad`);
-      card.style.setProperty("--nang", `${(-ang).toFixed(3)}rad`);
-      card.style.setProperty("--sa", (1 + s).toFixed(4));
-      card.style.setProperty("--sb", (1 - s * 0.55).toFixed(4));
-    }
-
-    function cuadro() {
-      vx = (vx + (tx - x) * RIGIDEZ) * FRENO;
-      vy = (vy + (ty - y) * RIGIDEZ) * FRENO;
-      x += vx;
-      y += vy;
-      const resto = Math.abs(vx) + Math.abs(vy) + Math.abs(tx - x) + Math.abs(ty - y);
-      if (resto < 0.003) {
-        x = tx;
-        y = ty;
-        vx = vy = 0;
-      }
-      pintar();
-      raf = resto >= 0.003 ? requestAnimationFrame(cuadro) : 0;
-    }
-    const animar = () => {
-      if (!raf) raf = requestAnimationFrame(cuadro);
-    };
     function reposo() {
-      tx = 0;
-      ty = 0;
-      animar();
-      // el reflejo vuelve a su lugar de reposo
       for (const v of ["--bx", "--by", "--bo"]) card.style.removeProperty(v);
     }
     function puntero(e: PointerEvent) {
       if (e.pointerType !== "mouse") return;
-      const r = marco.getBoundingClientRect();
-      const px = e.clientX - (r.left + r.width / 2);
-      const py = e.clientY - (r.top + r.height / 2);
-      // distancia del cursor al borde de la tarjeta (0 si está encima) y cuánto
-      // influye: nada más allá del alcance, todo cuando está encima
-      const dist = Math.hypot(Math.max(0, Math.abs(px) - r.width / 2), Math.max(0, Math.abs(py) - r.height / 2));
-      const influye = Math.min(1, Math.max(0, 1 - dist / ALCANCE));
-      const largo = Math.hypot(px, py) || 1;
-      // hacia el cursor; la distancia al centro se comprime para que no se dispare
-      const fuerza = Math.min(1, largo / 260) * influye;
-      tx = (px / largo) * fuerza;
-      ty = (py / largo) * fuerza;
-      animar();
-      // el reflejo de luz sigue al cursor sobre el vidrio y brilla más cuanto más
-      // cerca está (la transición de las variables lo desliza suave)
       const rc = card.getBoundingClientRect();
+      // distancia del cursor al borde de la tarjeta (0 si está encima)
+      const dx = Math.max(0, rc.left - e.clientX, e.clientX - rc.right);
+      const dy = Math.max(0, rc.top - e.clientY, e.clientY - rc.bottom);
+      const influye = Math.min(1, Math.max(0, 1 - Math.hypot(dx, dy) / ALCANCE));
       const bx = Math.min(100, Math.max(0, ((e.clientX - rc.left) / rc.width) * 100));
       const by = Math.min(100, Math.max(0, ((e.clientY - rc.top) / rc.height) * 100));
-      card.style.setProperty("--bx", `${bx.toFixed(1)}%`);
-      card.style.setProperty("--by", `${by.toFixed(1)}%`);
+      card.style.setProperty("--bx", bx.toFixed(1) + "%");
+      card.style.setProperty("--by", by.toFixed(1) + "%");
       card.style.setProperty("--bo", (0.3 + 0.7 * influye).toFixed(2));
     }
     const seguirMouse = () => {
-      if (!mover) return;
+      if (!seguir) return;
       document.addEventListener("pointermove", puntero);
       document.documentElement.addEventListener("pointerleave", reposo);
     };
@@ -388,8 +408,10 @@ const redes = [
     function teclas(e: KeyboardEvent) {
       if (e.key === "Escape") cerrar();
     }
+    // dentro cuenta toda la composición (las fotos también), no solo la tarjeta
+    const conjunto = card.parentElement as HTMLElement;
     function fuera(e: MouseEvent) {
-      if (!card.contains(e.target as Node)) cerrar();
+      if (!conjunto.contains(e.target as Node)) cerrar();
     }
 
     popup.querySelectorAll("[data-redes-cerrar]").forEach((el) => el.addEventListener("click", cerrar));

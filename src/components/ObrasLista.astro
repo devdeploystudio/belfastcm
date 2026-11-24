@@ -12,8 +12,8 @@ import { obras } from "../data/obras.js";
       {
         obras.map((o) => (
           <li>
-            <a class="obras__item" href={`/obras/${o.slug}`}>
-              {o.nombre}
+            <a class="obras__item caps" href={`/obras/${o.slug}`} aria-label={o.nombre}>
+              <span aria-hidden="true" set:html={o.nombreHtml} />
             </a>
           </li>
         ))
@@ -27,10 +27,10 @@ import { obras } from "../data/obras.js";
             class="obras__img"
             src={o.src}
             alt=""
-            widths={[320, 506]}
+            widths={[320, 480, 640]}
             sizes="(max-width: 700px) 40vw, 16vw"
             format="webp"
-            quality={78}
+            quality={84}
             loading="lazy"
             decoding="async"
           />
@@ -120,7 +120,7 @@ import { obras } from "../data/obras.js";
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: grayscale(1) contrast(1.05);
+    filter: var(--foto-bn);
     /* las fotos forman una tira vertical dentro de la ventana: la activa en
        0, las de obras anteriores arriba y las siguientes abajo. Al pasar de
        una obra a otra la tira corre y la foto nueva entra desde el lado por
@@ -162,11 +162,11 @@ import { obras } from "../data/obras.js";
      fija a la derecha, y mientras se scrollea se va marcando una obra tras otra
      (la elegida en negro) y la foto cambia a la suya (ver el script). */
   .obras--compact .obras__stage { align-items: stretch; text-align: left; }
-  .obras--compact .obras__items { width: 58%; }
+  .obras--compact .obras__items { width: 62%; }
   .obras--compact .obras__item {
     margin-inline: 0;
     padding-block: 0.16em;
-    font-size: clamp(1.9rem, 9.4vw, 3.4rem);
+    font-size: clamp(1.8rem, 8.2vw, 3.4rem);
     line-height: 1.02;
   }
   .obras--compact .obras__preview {

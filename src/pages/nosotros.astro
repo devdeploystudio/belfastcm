@@ -59,12 +59,19 @@ const pilares = [
       <h1 class="nos-title page-title caps" aria-label="Quiénes somos" data-reveal>
         <span aria-hidden="true" set:html={degular("Quiénes somos")} />
       </h1>
-      <p class="nos-sub page-lead" data-reveal>Conocé cómo trabajamos</p>
+      <!-- botón como los demás (se tipea y va subrayado: type-links.js); baja a la
+           sección de abajo -->
+      <a class="link-arrow link-arrow--down nos-type nos-sub" href="#somos" data-reveal>
+        <span>Conocé cómo trabajamos</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+          <path d="M7 2v10M3 8l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.3" />
+        </svg>
+      </a>
     </header>
 
     <!-- Bloque fijo: el texto queda pegado y entra por partes al scrollear (ver
          scripts/stage-rows.js) -->
-    <section class="somos-scene" data-somos-scene aria-label="Somos Belfast">
+    <section class="somos-scene" id="somos" data-somos-scene aria-label="Somos Belfast">
       <div class="somos-stage">
         <div class="somos" data-somos>
           <h2 class="somos__name caps" aria-label="Somos Belfast.">
@@ -190,13 +197,16 @@ const pilares = [
     padding-bottom: clamp(3rem, 8vw, 6rem);
   }
   .nos-title { text-wrap: balance; }
+  /* el botón de la bajada, centrado abajo (sin transform: lo usa data-reveal) */
   .nos-sub {
     position: absolute;
     left: 0;
     right: 0;
     bottom: clamp(2.5rem, 7vw, 5rem);
+    width: fit-content;
+    margin-inline: auto;
   }
-  /* en celular la portada no deja un hueco en el medio: la bajada va justo
+  /* en celular la portada no deja un hueco en el medio: el botón va justo
      debajo del título */
   @media (max-width: 699px) {
     .nos-head { min-height: auto; padding-bottom: 0; margin-bottom: clamp(3rem, 8vw, 5rem); }
@@ -359,6 +369,24 @@ const pilares = [
       // el texto va centrado en la pantalla: entra mientras queda fijo
       start: 0.3,
       stickyTop: 0,
+    });
+
+    // El botón de la portada ("Conocé cómo trabajamos") baja a este bloque. El
+    // texto entra con el scroll, así que si el enlace dejara la página al
+    // comienzo del bloque se vería a medias: se lo lleva al punto del recorrido
+    // donde el bloque ya está fijo y con todo su texto (75 % del recorrido; las
+    // filas terminan de entrar antes del 55 %). Sin bloque fijo (pantalla baja o
+    // movimiento reducido) queda el salto normal al principio de la sección.
+    document.querySelector<HTMLAnchorElement>('a[href="#somos"]')?.addEventListener("click", (e) => {
+      if (!scene.classList.contains("somos-scene--anim")) return;
+      e.preventDefault();
+      const vh = window.innerHeight;
+      const top = scene.getBoundingClientRect().top + window.scrollY;
+      const begin = vh * 0.3; // igual que `start` de arriba
+      const end = stage.offsetHeight - scene.offsetHeight; // stickyTop = 0
+      const destino = top - begin + 0.75 * (begin - end);
+      window.scrollTo({ top: destino, behavior: reduced ? "auto" : "smooth" });
+      history.replaceState(null, "", "#somos");
     });
   }
 

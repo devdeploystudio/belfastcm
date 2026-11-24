@@ -67,7 +67,7 @@ const servicios = [
       </h1>
       <p class="hacemos-lead page-lead" data-reveal>Cada proyecto necesita una forma de trabajo propia.</p>
       <p class="hacemos-intro page-text" data-reveal>
-        Definimos qué necesitás y organizamos la obra en función de ese alcance.
+        Definimos qué necesitás y organizamos la obra <span class="hacemos-intro__fin">en función de ese alcance.</span>
       </p>
     </header>
     </div>
@@ -145,6 +145,8 @@ const servicios = [
     margin-top: clamp(0.5rem, 2vw, 1.5rem);
     max-width: 22em;
   }
+  /* el final de la frase baja junto: así "alcance." no queda solo en un renglón */
+  .hacemos-intro__fin { white-space: nowrap; }
 
   /* Celular: el título con su bajada y el texto ocupan una pantalla estática
      (centrados en el alto) y después vienen los servicios en otra. */

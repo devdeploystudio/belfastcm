@@ -1,13 +1,18 @@
 ---
-import { Image } from "astro:assets";
+import { getImage } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import SloganSequence from "../components/SloganSequence.astro";
 import Intro from "../components/Intro.astro";
 import ObrasLista from "../components/ObrasLista.astro";
 import ProyectoCta from "../components/ProyectoCta.astro";
 // Cuadro del video de obra (en blanco y negro): se ve de inmediato y de
-// respaldo cuando el video no se reproduce (reduced-motion, ahorro de datos)
+// respaldo cuando el video no se reproduce (reduced-motion, ahorro de datos).
+// Hay dos, igual que los videos: horizontal (desktop) y vertical (celular).
 import heroPoster from "../assets/hero/hero-poster.jpg";
+import heroPosterV from "../assets/hero/hero-poster-v.jpg";
+
+const posterH = await getImage({ src: heroPoster, width: 1280, format: "webp", quality: 82 });
+const posterV = await getImage({ src: heroPosterV, width: 720, format: "webp", quality: 82 });
 
 const title = "Belfast Construction Management";
 const description =
@@ -36,18 +41,20 @@ const organization = {
     <h1 class="sr-only">Belfast Construction Management</h1>
 
     <section class="hero" data-hero aria-label="Inicio">
-      <Image
-        class="hero__img"
-        src={heroPoster}
-        alt=""
-        widths={[800, 1280, 1920]}
-        sizes="100vw"
-        format="webp"
-        quality={80}
-        loading="eager"
-        fetchpriority="high"
-        decoding="async"
-      />
+      <!-- en pantallas más altas que anchas (celular) va la portada vertical -->
+      <picture>
+        <source media="(max-aspect-ratio: 1/1)" srcset={posterV.src} />
+        <img
+          class="hero__img"
+          src={posterH.src}
+          alt=""
+          width={posterH.attributes.width}
+          height={posterH.attributes.height}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </picture>
       <video
         class="hero__video"
         muted
@@ -56,10 +63,13 @@ const organization = {
         preload="none"
         aria-hidden="true"
         tabindex="-1"
-        data-src-large="/video/hero-720.mp4"
-        data-src-small="/video/hero-480.mp4"
+        data-src-h="/video/hero-h.mp4"
+        data-src-v="/video/hero-v.mp4"
       ></video>
       <div class="hero__shade" aria-hidden="true"></div>
+      <!-- grano de película sobre el video: disimula la baja resolución del
+           original y le da textura -->
+      <div class="hero__grain" aria-hidden="true"></div>
       <a class="scroll-cue" href="#slogan">
         <span class="scroll-cue__label">Scroll</span>
         <span class="scroll-cue__line" aria-hidden="true"></span>
@@ -102,6 +112,31 @@ const organization = {
     position: absolute;
     inset: 0;
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.5));
+  }
+  /* Grano: una textura de ruido (public/grano.png) que se repite y salta de lugar
+     ocho veces por segundo, como el grano de una película. La intensidad es el
+     opacity; el tamaño del grano, el background-size. */
+  .hero__grain {
+    position: absolute;
+    inset: 0;
+    background: url("/grano.png") 0 0 / 220px 220px;
+    opacity: 0.2;
+    pointer-events: none;
+    animation: hero-grano 1s steps(1) infinite;
+  }
+  /* en el celular el video se ve más grande y de más cerca: grano más suave */
+  @media (max-width: 699px) {
+    .hero__grain { opacity: 0.15; }
+  }
+  @keyframes hero-grano {
+    0% { background-position: 0 0; }
+    12.5% { background-position: -47px 31px; }
+    25% { background-position: 83px -62px; }
+    37.5% { background-position: -29px -95px; }
+    50% { background-position: 112px 40px; }
+    62.5% { background-position: -78px 71px; }
+    75% { background-position: 24px -33px; }
+    87.5% { background-position: -102px -14px; }
   }
   .page-body {
     position: relative;
@@ -146,6 +181,7 @@ const organization = {
 
   @media (prefers-reduced-motion: reduce) {
     .scroll-cue__line { animation: none; }
+    .hero__grain { animation: none; }
   }
 </style>
 
@@ -155,12 +191,22 @@ const organization = {
   const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
 
   // Con reduced-motion o ahorro de datos no se descarga ni se reproduce: queda
-  // el cuadro fijo. Si no, se elige la versión liviana en pantallas chicas.
+  // el cuadro fijo. Si no, se elige la versión según la forma de la pantalla:
+  // vertical si es más alta que ancha (celular), horizontal si no. Si cambia (se
+  // gira el celular), se cambia de video.
   if (video && !reduced && !saveData) {
+    const vertical = window.matchMedia("(max-aspect-ratio: 1/1)");
+    const cargar = () => {
+      const src = vertical.matches ? video.dataset.srcV! : video.dataset.srcH!;
+      if (video.getAttribute("src") === src) return;
+      video.classList.remove("is-playing");
+      video.src = src;
+      video.play().catch(() => {});
+    };
     video.muted = true;
-    video.src = (window.innerWidth < 800 ? video.dataset.srcSmall : video.dataset.srcLarge)!;
-    video.addEventListener("playing", () => video.classList.add("is-playing"), { once: true });
-    video.play().catch(() => {});
+    video.addEventListener("playing", () => video.classList.add("is-playing"));
+    cargar();
+    vertical.addEventListener("change", cargar);
 
     // la foto queda fija detrás de la hoja blanca: cuando ya la tapó por
     // completo se pausa el video para no gastar batería de balde

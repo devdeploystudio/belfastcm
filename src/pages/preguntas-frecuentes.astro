@@ -218,16 +218,37 @@ const faqs = [
   .faq-row > .faq-paren { transform: scaleX(0.68); }
   .faq-row > .faq-paren:first-child { transform-origin: 100% 50%; margin-right: -0.05em; }
   .faq-row > .faq-paren:last-child { transform-origin: 0 50%; margin-left: -0.05em; }
-  /* la pregunta, en bold como el título (Degular; ¿ y ? en bold del cuerpo) */
+  /* la pregunta, en Degular Regular (¿ y ? en el peso regular del cuerpo). Las
+     tildes y la ñ que dibuja el CSS (global.css) se hicieron para el bold: acá van
+     más finas, a juego con el trazo de la regular. */
   .faq-questions {
     display: grid;
     align-items: center;
     width: var(--qw, 10.5em);
     font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(1.75rem, 3.4vw, 3.6rem);
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3.1vw, 3.3rem);
     line-height: var(--lh-item);
     letter-spacing: -0.01em;
+  }
+  /* ¿ y ?: la demo de Degular no los trae y salen de SF Pro Regular, que es un
+     poco más gruesa que la Degular regular. Se los afina con un contorno del color
+     del fondo (blanco) que les come un hilo del trazo. Cuando se tenga la fuente
+     completa, sacar el contorno. */
+  .faq-questions .dp,
+  .faq-answer__q .dp {
+    font-weight: 400;
+    -webkit-text-stroke: 0.024em #fff;
+  }
+  .faq-questions .acc--acute::after,
+  .faq-answer__q .acc--acute::after {
+    width: 0.22em;
+    height: 0.055em;
+  }
+  .faq-questions .acc--tilde::after,
+  .faq-answer__q .acc--tilde::after {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 20'%3E%3Cpath d='M5 14 C11 3 18 3 25 10 S39 17 45 6' fill='none' stroke='black' stroke-width='4.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 20'%3E%3Cpath d='M5 14 C11 3 18 3 25 10 S39 17 45 6' fill='none' stroke='black' stroke-width='4.5' stroke-linecap='round'/%3E%3C/svg%3E");
   }
   /* todas las preguntas comparten la misma celda y son de 3 renglones: el alto
      del bloque no cambia de una a otra */
@@ -235,6 +256,8 @@ const faqs = [
     grid-area: 1 / 1;
     margin: 0;
     text-align: center;
+    /* el h2 trae negrita por defecto: acá hereda el peso regular */
+    font-weight: inherit;
   }
   .faq-q__btn {
     display: block;
@@ -249,7 +272,7 @@ const faqs = [
     cursor: pointer;
   }
   .faq-q__l { display: block; white-space: nowrap; }
-  .faq-q__btn:hover > span { text-decoration: underline; text-underline-offset: 0.12em; text-decoration-thickness: 2px; }
+  .faq-q__btn:hover > span { text-decoration: underline; text-underline-offset: 0.12em; text-decoration-thickness: 1px; }
   .faq-q__btn:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 4px; }
   .faq-hint {
     margin: 0;
@@ -325,9 +348,10 @@ const faqs = [
   .faq-answer__q {
     margin: 0;
     padding-right: 2rem;
+    /* regular y un poco más chica, igual que las preguntas entre paréntesis */
     font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(1.75rem, 3.8vw, 3.9rem);
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3.5vw, 3.55rem);
     line-height: var(--lh-item);
     letter-spacing: -0.01em;
     text-wrap: balance;
@@ -395,7 +419,7 @@ const faqs = [
     .faq-qa { width: 100%; margin-bottom: 5.5rem; } /* lugar para el aviso y los números */
     .faq-paren { font-size: clamp(3.5rem, 14vw, 5rem); }
     /* en celular el texto es más chico para que el marco entre en el ancho */
-    .faq-questions { font-size: clamp(1.35rem, 6.4vw, 2.4rem); }
+    .faq-questions { font-size: clamp(1.25rem, 5.9vw, 2.2rem); }
     .faq-answer__item { grid-template-columns: 1fr; text-align: left; }
     .faq-answer__q { padding-right: 0; }
   }

@@ -1,5 +1,13 @@
 @font-face {
   font-family: "Degular Display";
+  src: url("/fonts/Degular-Display-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Degular Display";
   src: url("/fonts/Degular-Display-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
@@ -72,6 +80,12 @@
   --lh-item: 1.05;   /* títulos de renglón, preguntas y nombres de obra (Degular) */
   --lh-lead: 1.1;    /* bajadas y subtítulos grandes (Cormorant) */
   --lh-text: 1.5;    /* párrafos */
+
+  /* Fotos de obra: en blanco y negro, un poco más oscuras para que las claras
+     (cielos, casas blancas) no se fundan con el fondo blanco de la página; con el
+     mouse encima pasan a color. Un solo lugar para todo el sitio. */
+  --foto-bn: grayscale(1) contrast(1.05) brightness(0.9);
+  --foto-color: grayscale(0) contrast(1.05) brightness(1);
 
   --gutter: clamp(1.25rem, 4vw, 3rem);
   --logo-w: clamp(150px, 22vw, 260px);
@@ -228,6 +242,10 @@ a:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 4px; }
 @keyframes ty-caret { 50% { opacity: 0; } }
 .link-arrow:hover svg,
 .link-arrow:focus-visible svg { transform: translate(2px, -2px); }
+/* botón que baja a la sección siguiente: la flecha apunta abajo y se mueve hacia
+   abajo */
+.link-arrow--down:hover svg,
+.link-arrow--down:focus-visible svg { transform: translateY(3px); }
 
 /* Aparición al scrollear (páginas internas): el script agrega .js al <html> y
    .is-in a cada elemento cuando entra en pantalla. */
