@@ -25,15 +25,12 @@ const datos = [
   { label: "Estudio de arquitectura", value: obra.estudio },
   { label: "Trabajo realizado por Belfast", value: obra.trabajo },
 ];
-// `noindex` en <Base>: los datos de las obras son provisorios; sacarlo cuando
-// estén los reales.
 ---
 
 <Base
   title={`${obra.nombre} - Belfast CM`}
   description={`${obra.nombre}: ${obra.ubicacion}. Una obra de Belfast Construction Management.`}
   path={`/obras/${obra.slug}`}
-  noindex
 >
   <main class="obra-page">
     <nav class="obra-page__back" aria-label="Volver">

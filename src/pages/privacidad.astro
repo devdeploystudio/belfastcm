@@ -1,0 +1,112 @@
+---
+import Base from "../layouts/Base.astro";
+
+// Borrador para que lo revise la clienta. Describe lo que el sitio hace hoy: si
+// se suma Google Analytics (u otra herramienta que use cookies) o se define el
+// servicio que recibe el formulario, hay que actualizarlo.
+const actualizada = "noviembre de 2026";
+
+const secciones = [
+  {
+    titulo: "Quién es responsable",
+    parrafos: [
+      "Belfast Construction Management es responsable de los datos que nos dejás en este sitio. Nuestra oficina está en Del Portal, Local 10, Rincón de Milberg, Provincia de Buenos Aires.",
+    ],
+  },
+  {
+    titulo: "Qué datos pedimos",
+    parrafos: [
+      "En el formulario de contacto pedimos tu nombre y apellido, tu correo electrónico y tu consulta. Si querés, también podés dejarnos tu teléfono y la ubicación de la obra.",
+      "Si nos escribís por WhatsApp o por correo, recibimos los datos que incluyas en ese mensaje.",
+    ],
+  },
+  {
+    titulo: "Para qué los usamos",
+    parrafos: [
+      "Usamos tus datos únicamente para responder tu consulta y conversar sobre tu proyecto. No los vendemos ni los usamos para enviarte publicidad sin tu consentimiento.",
+      "Los conservamos el tiempo necesario para atender tu consulta y la relación que surja de ella.",
+    ],
+  },
+  {
+    titulo: "Con quién se comparten",
+    parrafos: [
+      "No compartimos tus datos con terceros, salvo con los proveedores que necesitamos para que el sitio y los mensajes funcionen (alojamiento y envío de correos) o cuando una norma o una autoridad lo exija.",
+      "El sitio tiene enlaces a WhatsApp, Google Maps y redes sociales. Cuando entrás a esos servicios se aplican sus propias políticas de privacidad.",
+    ],
+  },
+  {
+    titulo: "Cookies",
+    parrafos: [
+      "Este sitio no usa cookies de publicidad ni de seguimiento. Solo guarda en tu navegador, mientras la pestaña está abierta, un dato para no repetir la animación de entrada.",
+    ],
+  },
+  {
+    titulo: "Tus derechos",
+    parrafos: [
+      "Podés pedirnos acceder a tus datos, corregirlos, actualizarlos o eliminarlos escribiendo a info@belfastcm.com.",
+      "El titular de los datos personales tiene la facultad de ejercer el derecho de acceso en forma gratuita a intervalos no inferiores a seis meses, salvo que acredite un interés legítimo al efecto (artículo 14, inciso 3, de la Ley 25.326).",
+      "La Agencia de Acceso a la Información Pública, en su carácter de órgano de control de la Ley 25.326, tiene la atribución de atender las denuncias y reclamos que interpongan quienes resulten afectados en sus derechos por incumplimiento de las normas sobre protección de datos personales.",
+    ],
+  },
+];
+---
+
+<Base
+  title="Política de privacidad - Belfast CM"
+  description="Qué datos pide el sitio de Belfast Construction Management, para qué se usan y cómo pedir que los corrijamos o eliminemos."
+  path="/privacidad"
+>
+  <main class="legal">
+    <header class="legal__head">
+      <h1 class="page-title" data-reveal>Privacidad</h1>
+      <p class="page-text legal__fecha" data-reveal>Última actualización: {actualizada}.</p>
+    </header>
+
+    {
+      secciones.map((s) => (
+        <section class="legal__seccion" data-reveal>
+          <h2 class="page-lead">{s.titulo}</h2>
+          {s.parrafos.map((p) => (
+            <p class="page-text">{p}</p>
+          ))}
+        </section>
+      ))
+    }
+
+    <p class="legal__volver" data-reveal>
+      <a class="link-arrow" href="/contacto">
+        <span>Volver a contacto</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+          <path d="M3 11 11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3" />
+        </svg>
+      </a>
+    </p>
+  </main>
+</Base>
+
+<style is:global>
+  .legal {
+    max-width: 46rem;
+    margin-inline: auto;
+    padding: clamp(7rem, 16vw, 11rem) var(--gutter) clamp(4rem, 9vw, 7rem);
+  }
+  .legal__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+    margin-bottom: clamp(3rem, 8vw, 5rem);
+  }
+  /* el título es una sola palabra larga: que no desborde en celulares angostos */
+  .legal .page-title { font-size: min(var(--fs-title), 14vw); }
+  .legal__seccion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: clamp(1.75rem, 4vw, 2.5rem) 0;
+    border-top: 1px solid var(--grey-line);
+  }
+  .legal__seccion .page-text { max-width: none; }
+  .legal__volver { margin: clamp(2rem, 5vw, 3rem) 0 0; }
+</style>

@@ -247,6 +247,25 @@ a:focus-visible { outline: 2px solid var(--yellow-03); outline-offset: 4px; }
 .link-arrow--down:hover svg,
 .link-arrow--down:focus-visible svg { transform: translateY(3px); }
 
+/* En pantallas táctiles los enlaces chicos reciben el toque en un alto de 44px
+   sin cambiar cómo se ven (una zona invisible). :where() para no pisar la
+   posición que cada página le dé al enlace. */
+@media (pointer: coarse) {
+  :where(.link-arrow, .ct-info__value, .ct-legal a, .site-footer a) { position: relative; }
+  .link-arrow::before,
+  .ct-info__value::before,
+  .ct-legal a::before,
+  .site-footer a::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 44px;
+    transform: translateY(-50%);
+  }
+}
+
 /* Aparición al scrollear (páginas internas): el script agrega .js al <html> y
    .is-in a cada elemento cuando entra en pantalla. */
 html.js [data-reveal] {

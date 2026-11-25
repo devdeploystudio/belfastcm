@@ -48,13 +48,26 @@ const faqs = [
     mapa: true,
   },
 ];
+
+// Datos estructurados: las mismas preguntas y respuestas que se ven, en el
+// formato que leen los buscadores.
+const preguntasLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
 ---
 
 <Base
   title="Preguntas frecuentes - Belfast CM"
-  description="Cómo consultar por una obra, si podés trabajar con Belfast teniendo arquitecto, cómo se arma el presupuesto, cuánto lleva construir y dónde queda nuestra oficina."
+  description="Cómo consultar por una obra, trabajar con Belfast si tenés arquitecto, cómo se arma el presupuesto, cuánto lleva construir y dónde queda la oficina."
   path="/preguntas-frecuentes"
 >
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(preguntasLd)} />
   <main class="faq">
     <!-- Escenario fijo: el título queda a la izquierda y, entre paréntesis, va
          apareciendo una pregunta por vez mientras se scrollea (o se elige con los

@@ -49,11 +49,11 @@ import virazonTerraza from "../assets/obras/virazon-88/terraza.jpg";
 import virazonCielorraso from "../assets/obras/virazon-88/cielorraso.jpg";
 import virazonLosa from "../assets/obras/virazon-88/losa.jpg";
 
-// PROVISORIO: Castores 49 todavía no tiene fotos (falta su carpeta en
-// Briefing/Material). Hasta que lleguen usa estas tres de prueba.
-import pruebaLiving from "../assets/obras/obra-03-living.jpg";
-import pruebaJardin from "../assets/obras/obra-04-jardin.jpg";
-import pruebaBano from "../assets/obras/obra-05-bano.jpg";
+import castoresFachada from "../assets/obras/castores-49/fachada.jpg";
+import castoresFrente from "../assets/obras/castores-49/frente.jpg";
+import castoresContrafrente from "../assets/obras/castores-49/contrafrente.jpg";
+import castoresEscalones from "../assets/obras/castores-49/escalones.jpg";
+import castoresPileta from "../assets/obras/castores-49/pileta.jpg";
 
 // `forma` recorta la foto en la página de la obra: "c" cuadrada, "m" apaisada
 // suave (4:3). Sin `forma`, vertical 4:5 u horizontal 3:2 según la foto.
@@ -119,9 +119,11 @@ const F = {
   sbVideoComedor: video("/video/obras/santa-barbara-1.mp4", "Comedor con mesa larga, sillas y cortinas frente a la galería"),
   sbVideoPasillo: video("/video/obras/santa-barbara-2.mp4", "Pasillo con placard blanco y piso de piedra"),
 
-  pruebaLiving: foto(pruebaLiving, "Living comedor con mesa, sillas y cortinas"),
-  pruebaJardin: foto(pruebaJardin, "Jardín interior con plantas junto a un ventanal"),
-  pruebaBano: foto(pruebaBano, "Baño con mesada de mármol oscuro y cortinas de lino"),
+  castoresFachada: foto(castoresFachada, "Fachada blanca de la casa con ventanal, escalones de piedra y jardín"),
+  castoresFrente: foto(castoresFrente, "Frente de la casa blanca con acceso de piedra, árboles y un auto estacionado"),
+  castoresContrafrente: foto(castoresContrafrente, "Contrafrente de la casa blanca con pileta, escalones y jardín"),
+  castoresEscalones: foto(castoresEscalones, "Escalones de piedra que bajan desde el patio hasta la pileta"),
+  castoresPileta: foto(castoresPileta, "Pileta con borde de piedra rodeada de césped y un cerco verde"),
 };
 
 // Las 8 fotos de la secuencia que acompaña al slogan del inicio (verticales,
@@ -142,7 +144,9 @@ export const ESTADOS = {
   "en-proceso": "En proceso",
 };
 
-// Las 6 obras (lista del inicio, página /obras y una página por obra). Datos
+// Las 6 obras (lista del inicio, página /obras y una página por obra). El orden
+// de esta lista es el que se ve en el sitio: las en proceso van intercaladas.
+// Datos
 // reales pasados por la clienta; en todas, Belfast hizo la construcción.
 // `principal` es la foto de la lista y de la ficha; `galeria`, las de la página
 // de la obra.
@@ -174,6 +178,17 @@ const datos = [
     galeria: [F.yachtPileta, F.yachtFondo, F.yachtContrafrente, F.yachtFrente, F.yachtFrente2],
   },
   {
+    slug: "virazon-88",
+    nombre: "Virazón 88",
+    descripcion: "Proyecto de Pacífica Arquitectura en Virazón, actualmente en obra.",
+    ubicacion: "Virazón 88, Nordelta",
+    anio: "2026",
+    estado: "en-proceso",
+    estudio: "Pacífica Arquitectura",
+    principal: F.virazonEscalera,
+    galeria: [F.virazonEstructura, F.virazonEscalera2, F.virazonPasillo, F.virazonTerraza, F.virazonCielorraso, F.virazonLosa],
+  },
+  {
     slug: "castores-49",
     nombre: "Castores 49",
     descripcion: "Proyecto de GWS Arquitectura, finalizado en 2025.",
@@ -181,9 +196,8 @@ const datos = [
     anio: "2025",
     estado: "finalizada",
     estudio: "GWS Arquitectura",
-    // PROVISORIO: fotos de prueba hasta que llegue la carpeta de esta obra
-    principal: F.pruebaLiving,
-    galeria: [F.pruebaJardin, F.pruebaBano],
+    principal: F.castoresFachada,
+    galeria: [F.castoresFrente, F.castoresContrafrente, F.castoresEscalones, F.castoresPileta],
   },
   {
     slug: "santa-barbara",
@@ -210,17 +224,6 @@ const datos = [
     estudio: "Lucio Gernaert",
     principal: F.puentesVentana,
     galeria: [F.puentesAmbiente, F.puentesCielo, F.puentesEscalera, F.puentesLosa, F.puentesPared, F.puentesPuntales],
-  },
-  {
-    slug: "virazon-88",
-    nombre: "Virazón 88",
-    descripcion: "Proyecto de Pacífica Arquitectura en Virazón, actualmente en obra.",
-    ubicacion: "Virazón 88, Nordelta",
-    anio: "2026",
-    estado: "en-proceso",
-    estudio: "Pacífica Arquitectura",
-    principal: F.virazonEscalera,
-    galeria: [F.virazonEstructura, F.virazonEscalera2, F.virazonPasillo, F.virazonTerraza, F.virazonCielorraso, F.virazonLosa],
   },
 ];
 

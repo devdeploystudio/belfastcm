@@ -20,7 +20,16 @@ const description =
 
 const organization = {
   "@context": "https://schema.org",
-  "@type": "Organization",
+  // constructora con local: incluye la direccion de la oficina
+  "@type": "GeneralContractor",
+  image: "https://belfastcm.com/logo-og.png",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Del Portal, Local 10",
+    addressLocality: "Rincón de Milberg",
+    addressRegion: "Buenos Aires",
+    addressCountry: "AR",
+  },
   name: "Belfast Construction Management",
   url: "https://belfastcm.com/",
   logo: "https://belfastcm.com/logo-og.png",
